@@ -1,17 +1,62 @@
-# v2rayN
+# V2rayN
 
-### A GUI client for Windows, Linux and macOS. Support [Xray](https://github.com/XTLS/Xray-core) and [sing-box](https://github.com/SagerNet/sing-box) and [others](https://github.com/2dust/v2rayN/wiki/List-of-supported-cores)
+### A GUI client for Windows, Linux and macOS — sing-box first, with advanced routing, ad-blocking and preset packages.
 
-[![CodeFactor](https://www.codefactor.io/repository/github/2dust/v2rayn/badge)](https://www.codefactor.io/repository/github/2dust/v2rayn)
-[![Release](https://img.shields.io/github/v/release/2dust/v2rayN?logo=github&label=Release)](https://github.com/2dust/v2rayN/releases)
-[![Downloads](https://img.shields.io/github/downloads/2dust/v2rayN/latest/total?logo=github&label=Downloads)](https://github.com/2dust/v2rayN/releases)
-[![Telegram](https://img.shields.io/badge/Telegram-Chat-26A5E4?logo=telegram)](https://t.me/v2rayn)
- 
-[![Windows](https://img.shields.io/badge/Windows-supported-0078D6?logo=windows)](https://github.com/2dust/v2rayN) 
-[![Linux](https://img.shields.io/badge/Linux-supported-FCC624?logo=linux&logoColor=000)](https://github.com/2dust/v2rayN) 
-[![macOS](https://img.shields.io/badge/macOS-supported-000000?logo=apple)](https://github.com/2dust/v2rayN) 
-[![GPG Signed](https://img.shields.io/badge/GPG-signed-4B32C3?logo=gnuprivacyguard)](https://github.com/2dust/v2rayN)
+[![Release](https://img.shields.io/github/v/release/rainsmen/V2rayN?logo=github&label=Release)](https://github.com/rainsmen/V2rayN/releases)
+[![Downloads](https://img.shields.io/github/downloads/rainsmen/V2rayN/latest/total?logo=github&label=Downloads)](https://github.com/rainsmen/V2rayN/releases)
+[![Build](https://img.shields.io/github/actions/workflow/status/rainsmen/V2rayN/build-windows.yml?logo=github&label=Build)](https://github.com/rainsmen/V2rayN/actions)
 
+[![Windows](https://img.shields.io/badge/Windows-supported-0078D6?logo=windows)](https://github.com/rainsmen/V2rayN)
+[![Linux](https://img.shields.io/badge/Linux-supported-FCC624?logo=linux&logoColor=000)](https://github.com/rainsmen/V2rayN)
+[![macOS](https://img.shields.io/badge/macOS-supported-000000?logo=apple)](https://github.com/rainsmen/V2rayN)
+
+> Forked from [2dust/v2rayN](https://github.com/2dust/v2rayN). This fork restructures the core architecture and adds advanced routing features.
+
+---
+
+## What's Different / 与原版的区别
+
+This fork applies three major improvements over the upstream v2rayN:
+
+### 1. sing-box as Default Core / sing-box 为默认内核
+
+- **Default core changed to sing-box** for all protocols (VMess, VLESS, Trojan, Shadowsocks, Hysteria2, TUIC, Anytls, WireGuard, etc.)
+- Removed redundant cores: v2fly, v2fly_v5, mihomo (Clash), hysteria, hysteria2, tuic, naiveproxy, juicity, shadowquic — sing-box already supports these protocols natively
+- **Optional cores retained**: Xray (for kcp/xhttp transports), brook, overtls, mieru (protocols sing-box doesn't support)
+- Existing configs auto-migrate: old CoreType values convert to sing-box on first launch, with `guiNDB.db` backed up to `guiNDB.db.bak`
+- Smaller distribution: default `bin/` ships only sing-box (~40-100MB saved)
+
+### 2. Ad-blocking & Advanced Routing / 去广告与高级路由
+
+- **Ad-block toggle** (off by default) — injects `reject` rules at route layer and `NXDOMAIN` at DNS layer
+- Three third-party ad-block ruleset sources: `category-ads-all`, `anti-AD`, `Loyalsoldier-reject`
+- **Advanced rule fields** in the routing rule editor:
+  - `source_ip` / `source_ip_cidr` matching
+  - `actionType` (route / reject / sniff / resolve / hijack-dns) — overrides outboundTag
+  - `logicType` (and / or) for logical rules
+  - `invert` flag for rule negation
+- Xray compatibility: ActionType downgrades to outboundTag mapping automatically
+
+### 3. Removed Promotion / 移除推广
+
+- Removed the base64-obfuscated promotion URL and all related UI/menu items
+- No sponsor/donation/affiliate content
+
+### 4. Preset Packages / 预置套餐
+
+One-click import of preset routing rule bundles from the Routing Setting window:
+
+| Preset | Description |
+|--------|-------------|
+| **Ad Block** | Blocks `geosite:category-ads-all` + `geoip:ad` |
+| **Streaming Media** | Proxies Netflix / YouTube / Disney+ / HBO / Spotify / TikTok, bypasses CN |
+| **Bypass CN** | Whitelist mode — bypass mainland China, proxy everything else |
+
+### 5. Ruleset Manager / 规则集管理器
+
+Visual editor for sing-box custom rule sets (`CustomRulesetPath4Singbox`):
+- Add / remove / edit `Ruleset4Sbox` entries (tag, type, format, url, path, download_detour)
+- Changes saved to JSON file and persisted to the routing item
 
 ---
 
@@ -19,62 +64,47 @@
 
 Download the latest release here:
 
-在这里下载最新版本：
-
-[https://github.com/2dust/v2rayN/releases](https://github.com/2dust/v2rayN/releases)
-
-
-> [!TIP]
-> v2rayN is the desktop version. For the mobile version, please visit the v2rayNG \
-> v2rayN 是电脑版，手机版请访问 v2rayNG
->
-> https://github.com/2dust/v2rayNG
-
----
-
-## Documentation / 使用文档
-
-Read the Wiki for usage guides and configuration details.
-
-请阅读 Wiki 获取使用说明和配置教程。
-
-[https://github.com/2dust/v2rayN/wiki](https://github.com/2dust/v2rayN/wiki)
+[https://github.com/rainsmen/V2rayN/releases](https://github.com/rainsmen/V2rayN/releases)
 
 ---
 
 ## Supported Platforms / 支持平台
 
-| Platform / 平台 | x64 | x86 | arm64 | riscv64 | loong64 |
-| --- | --- | --- | --- | --- | --- |
-| Windows | ✅ | ✅ | ✅ | - | - |
-| Linux | ✅ | - | ✅ | ✅ | ✅ |
-| macOS | ✅ | - | ✅ | - | - |
-
-Minimum OS requirements: [Release files introduction](https://github.com/2dust/v2rayN/wiki/Release-files-introduction) / 最低系统要求：[发布文件介绍](https://github.com/2dust/v2rayN/wiki/Release-files-introduction)
+| Platform / 平台 | x64 | arm64 | riscv64 | loong64 |
+| --- | --- | --- | --- | --- |
+| Windows | ✅ | ✅ | - | - |
+| Linux | ✅ | ✅ | ✅ | ✅ |
+| macOS | ✅ | ✅ | - | - |
 
 ---
 
-## GPG Verification / GPG 签名校验
+## Migration Guide / 迁移指南
 
-Release files are signed with GPG to verify authenticity and integrity, helping prevent mirror, ISP, or CDN hijacking.
+If upgrading from upstream v2rayN:
 
-发布文件已使用 GPG 签名，可用于校验文件真实性与完整性，预防镜像站、运营商或 CDN 劫持。
+1. **Backup**: Your `guiNDB.db` is automatically backed up to `guiNDB.db.bak` on first launch
+2. **Core migration**: Nodes using removed cores (mihomo/v2fly/hysteria etc.) auto-switch to sing-box
+3. **Clash YAML users**: Clash YAML custom config is no longer supported — migrate to sing-box custom config template
+4. **kcp/xhttp transport users**: Manually switch those nodes to the Xray optional core in node settings
+5. **Xray users**: Xray remains available as an optional core — download it via Check Updates if needed
 
-### Fingerprint / 公钥指纹
+---
 
-```text
-7694 5E9F 3E9A 168F 8070 F195 805D 661C
-134D FAF6 8903 C199 463C 31E5 AE90 3AE0
+## Build / 编译
+
+```bash
+# Requires .NET 10 SDK
+git clone --recursive https://github.com/rainsmen/V2rayN.git
+cd V2rayN/v2rayN
+dotnet build -c Release
 ```
 
 ---
 
-## Community / 社区
+## Credits / 致谢
 
-Telegram Group / Telegram 群组：
-
-[https://t.me/v2rayN](https://t.me/v2rayN)
-
-Telegram Channel / Telegram 频道：
-
-[https://t.me/github_2dust](https://t.me/github_2dust)
+- Original project: [2dust/v2rayN](https://github.com/2dust/v2rayN)
+- Core: [SagerNet/sing-box](https://github.com/SagerNet/sing-box)
+- Optional core: [XTLS/Xray-core](https://github.com/XTLS/Xray-core)
+- Ad-block rulesets: [anti-AD](https://github.com/privacy-protection-tools/anti-AD), [Loyalsoldier/sing-box-rules](https://github.com/Loyalsoldier/sing-box-rules)
+- GeoIP/GeoSite: [Loyalsoldier/v2ray-rules-dat](https://github.com/Loyalsoldier/v2ray-rules-dat)
