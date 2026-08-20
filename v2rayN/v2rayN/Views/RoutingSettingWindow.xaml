@@ -49,6 +49,22 @@
                         <TextBlock Style="{StaticResource ToolbarTextBlock}" Text="{x:Static resx:ResUI.menuRoutingAdvancedImportRules}" />
                     </StackPanel>
                 </Button>
+                <Separator />
+                <Button x:Name="menuRulesetManager2">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon
+                            Margin="{StaticResource MarginRight8}"
+                            VerticalAlignment="Center"
+                            Kind="FolderEdit" />
+                        <TextBlock Style="{StaticResource ToolbarTextBlock}" Text="{x:Static resx:ResUI.menuRulesetManager}" />
+                    </StackPanel>
+                </Button>
+                <Separator />
+                <MenuItem x:Name="menuPresetPackages2" Header="{x:Static resx:ResUI.menuPresetPackages}">
+                    <MenuItem x:Name="menuPresetAdBlock" Header="{x:Static resx:ResUI.PresetAdBlock}" />
+                    <MenuItem x:Name="menuPresetStreaming" Header="{x:Static resx:ResUI.PresetStreaming}" />
+                    <MenuItem x:Name="menuPresetBypassCN" Header="{x:Static resx:ResUI.PresetBypassCN}" />
+                </MenuItem>
             </ToolBar>
         </ToolBarTray>
 

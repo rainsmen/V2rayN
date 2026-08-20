@@ -1,0 +1,28 @@
+[
+  {
+    "remarks": "阻断广告域名(路由层)",
+    "outboundTag": "block",
+    "domain": [
+      "geosite:category-ads-all"
+    ]
+  },
+  {
+    "remarks": "阻断广告IP",
+    "outboundTag": "block",
+    "ip": [
+      "geoip:ad"
+    ]
+  },
+  {
+    "remarks": "绕过局域网IP",
+    "outboundTag": "direct",
+    "ip": [
+      "geoip:private"
+    ]
+  },
+  {
+    "remarks": "最终代理",
+    "port": "0-65535",
+    "outboundTag": "proxy"
+  }
+]

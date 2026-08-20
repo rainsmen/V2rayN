@@ -34,6 +34,10 @@ public partial class RoutingSettingWindow : WindowBase<RoutingSettingViewModel>
             this.BindCommand(ViewModel, vm => vm.RoutingAdvancedSetDefaultCmd, v => v.menuRoutingAdvancedSetDefault).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.RoutingAdvancedImportRulesCmd, v => v.menuRoutingAdvancedImportRules).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.RoutingAdvancedImportRulesCmd, v => v.menuRoutingAdvancedImportRules2).DisposeWith(disposables);
+            this.BindCommand(ViewModel, vm => vm.RulesetManagerCmd, v => v.menuRulesetManager2).DisposeWith(disposables);
+            this.BindCommand(ViewModel, vm => vm.PresetAdBlockCmd, v => v.menuPresetAdBlock).DisposeWith(disposables);
+            this.BindCommand(ViewModel, vm => vm.PresetStreamingCmd, v => v.menuPresetStreaming).DisposeWith(disposables);
+            this.BindCommand(ViewModel, vm => vm.PresetBypassCNCmd, v => v.menuPresetBypassCN).DisposeWith(disposables);
 
             ViewModel.ShowYesNoInteraction.RegisterHandler(async interaction =>
             {

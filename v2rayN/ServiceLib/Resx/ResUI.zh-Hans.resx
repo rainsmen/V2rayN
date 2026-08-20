@@ -807,6 +807,21 @@
   <data name="menuRoutingAdvancedImportRules" xml:space="preserve">
     <value>一键导入规则集</value>
   </data>
+  <data name="menuRulesetManager" xml:space="preserve">
+    <value>规则集管理</value>
+  </data>
+  <data name="menuPresetPackages" xml:space="preserve">
+    <value>预置套餐</value>
+  </data>
+  <data name="PresetAdBlock" xml:space="preserve">
+    <value>预置：广告拦截</value>
+  </data>
+  <data name="PresetStreaming" xml:space="preserve">
+    <value>预置：流媒体分流</value>
+  </data>
+  <data name="PresetBypassCN" xml:space="preserve">
+    <value>预置：绕过大陆</value>
+  </data>
   <data name="menuRoutingAdvancedRemove" xml:space="preserve">
     <value>移除所选规则</value>
   </data>

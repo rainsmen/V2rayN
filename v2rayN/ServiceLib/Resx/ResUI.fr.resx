@@ -807,6 +807,21 @@
   <data name="menuRoutingAdvancedImportRules" xml:space="preserve">
     <value>Importer 1-clic du jeu de règles</value>
   </data>
+  <data name="menuRulesetManager" xml:space="preserve">
+    <value>Gestionnaire de jeux de règles</value>
+  </data>
+  <data name="menuPresetPackages" xml:space="preserve">
+    <value>Forfaits prédéfinis</value>
+  </data>
+  <data name="PresetAdBlock" xml:space="preserve">
+    <value>Préréglage : Blocage des publicités</value>
+  </data>
+  <data name="PresetStreaming" xml:space="preserve">
+    <value>Préréglage : Streaming</value>
+  </data>
+  <data name="PresetBypassCN" xml:space="preserve">
+    <value>Préréglage : Contournement CN</value>
+  </data>
   <data name="menuRoutingAdvancedRemove" xml:space="preserve">
     <value>Suppr. règles sélectionnées</value>
   </data>

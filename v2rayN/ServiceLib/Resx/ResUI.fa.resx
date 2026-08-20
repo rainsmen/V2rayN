@@ -807,6 +807,21 @@
   <data name="menuRoutingAdvancedImportRules" xml:space="preserve">
     <value>وارد کردن مجموعه قوانین</value>
   </data>
+  <data name="menuRulesetManager" xml:space="preserve">
+    <value>مدیریت مجموعه قوانین</value>
+  </data>
+  <data name="menuPresetPackages" xml:space="preserve">
+    <value>بسته‌های از پیش تنظیم شده</value>
+  </data>
+  <data name="PresetAdBlock" xml:space="preserve">
+    <value>پیش‌فرض: مسدودسازی تبلیغات</value>
+  </data>
+  <data name="PresetStreaming" xml:space="preserve">
+    <value>پیش‌فرض:分流 رسانه جریانی</value>
+  </data>
+  <data name="PresetBypassCN" xml:space="preserve">
+    <value>پیش‌فرض: دور زدن چین</value>
+  </data>
   <data name="menuRoutingAdvancedRemove" xml:space="preserve">
     <value>حذف انتخاب شده</value>
   </data>

@@ -1,0 +1,84 @@
+<base:WindowBase
+    x:Class="v2rayN.Desktop.Views.RulesetManagerWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:base="clr-namespace:v2rayN.Desktop.Base"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dd="clr-namespace:v2rayN.Desktop.DesignData"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
+    Title="{x:Static resx:ResUI.menuRulesetManager}"
+    Width="900"
+    Height="600"
+    x:DataType="vms:RulesetManagerViewModel"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+    <DockPanel>
+        <Menu Margin="{StaticResource Margin4}" DockPanel.Dock="Top">
+            <MenuItem x:Name="menuRulesetAdd2" Header="{x:Static resx:ResUI.menuRoutingAdvancedAdd}" />
+            <MenuItem x:Name="menuRulesetRemove2" Header="{x:Static resx:ResUI.menuRoutingAdvancedRemove}" />
+        </Menu>
+
+        <StackPanel
+            Margin="{StaticResource Margin4}"
+            HorizontalAlignment="Right"
+            DockPanel.Dock="Bottom"
+            Orientation="Horizontal">
+            <Button
+                x:Name="btnSave"
+                Width="100"
+                Content="{x:Static resx:ResUI.TbConfirm}"
+                IsDefault="True" />
+            <Button
+                x:Name="btnCancel"
+                Width="100"
+                Margin="{StaticResource MarginLr8}"
+                Content="{x:Static resx:ResUI.TbCancel}"
+                IsCancel="True" />
+        </StackPanel>
+
+        <DataGrid
+            x:Name="lstRulesets"
+            AutoGenerateColumns="False"
+            BorderThickness="1"
+            CanUserResizeColumns="True"
+            GridLinesVisibility="All"
+            HeadersVisibility="Column"
+            ItemsSource="{Binding RulesetItems}">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem x:Name="menuRulesetAdd" Header="{x:Static resx:ResUI.menuRoutingAdvancedAdd}" />
+                    <MenuItem x:Name="menuRulesetRemove" Header="{x:Static resx:ResUI.menuRoutingAdvancedRemove}" />
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+            <DataGrid.Columns>
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding tag}"
+                    Header="tag" />
+                <DataGridTextColumn
+                    Width="80"
+                    Binding="{Binding type}"
+                    Header="type" />
+                <DataGridTextColumn
+                    Width="80"
+                    Binding="{Binding format}"
+                    Header="format" />
+                <DataGridTextColumn
+                    Width="2*"
+                    Binding="{Binding url}"
+                    Header="url" />
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding path}"
+                    Header="path" />
+                <DataGridTextColumn
+                    Width="120"
+                    Binding="{Binding download_detour}"
+                    Header="download_detour" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</base:WindowBase>

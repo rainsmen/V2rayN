@@ -1582,6 +1582,51 @@ namespace ServiceLib.Resx {
         }
         
         /// <summary>
+        ///   查找类似 Ruleset Manager 的本地化字符串。
+        /// </summary>
+        public static string menuRulesetManager {
+            get {
+                return ResourceManager.GetString("menuRulesetManager", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Preset Packages 的本地化字符串。
+        /// </summary>
+        public static string menuPresetPackages {
+            get {
+                return ResourceManager.GetString("menuPresetPackages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Preset: Ad Block 的本地化字符串。
+        /// </summary>
+        public static string PresetAdBlock {
+            get {
+                return ResourceManager.GetString("PresetAdBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Preset: Streaming Media 的本地化字符串。
+        /// </summary>
+        public static string PresetStreaming {
+            get {
+                return ResourceManager.GetString("PresetStreaming", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Preset: Bypass CN 的本地化字符串。
+        /// </summary>
+        public static string PresetBypassCN {
+            get {
+                return ResourceManager.GetString("PresetBypassCN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Remove selected 的本地化字符串。
         /// </summary>
         public static string menuRoutingAdvancedRemove {

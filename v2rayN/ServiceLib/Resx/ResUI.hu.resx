@@ -807,6 +807,21 @@
   <data name="menuRoutingAdvancedImportRules" xml:space="preserve">
     <value>Szabályok importálása</value>
   </data>
+  <data name="menuRulesetManager" xml:space="preserve">
+    <value>Szabálykészlet-kezelő</value>
+  </data>
+  <data name="menuPresetPackages" xml:space="preserve">
+    <value>Előre beállított csomagok</value>
+  </data>
+  <data name="PresetAdBlock" xml:space="preserve">
+    <value>Előbeállítás: Hirdetésblokkolás</value>
+  </data>
+  <data name="PresetStreaming" xml:space="preserve">
+    <value>Előbeállítás: Streaming</value>
+  </data>
+  <data name="PresetBypassCN" xml:space="preserve">
+    <value>Előbeállítás: CN megkerülése</value>
+  </data>
   <data name="menuRoutingAdvancedRemove" xml:space="preserve">
     <value>Kijelölt eltávolítása</value>
   </data>

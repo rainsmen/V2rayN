@@ -1,0 +1,96 @@
+<base:WindowBase
+    x:Class="v2rayN.Views.RulesetManagerWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:base="clr-namespace:v2rayN.Base"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
+    Title="{x:Static resx:ResUI.menuRulesetManager}"
+    Width="900"
+    Height="600"
+    x:TypeArguments="vms:RulesetManagerViewModel"
+    ResizeMode="CanResize"
+    ShowInTaskbar="False"
+    Style="{StaticResource WindowGlobal}"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+    <DockPanel>
+        <ToolBarTray DockPanel.Dock="Top">
+            <ToolBar
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                ClipToBounds="True"
+                Style="{StaticResource MaterialDesignToolBar}">
+                <Button x:Name="menuRulesetAdd2" Content="{x:Static resx:ResUI.menuRoutingAdvancedAdd}" />
+                <Separator />
+                <Button x:Name="menuRulesetRemove2" Content="{x:Static resx:ResUI.menuRoutingAdvancedRemove}" />
+            </ToolBar>
+        </ToolBarTray>
+
+        <StackPanel
+            Margin="{StaticResource Margin8}"
+            HorizontalAlignment="Right"
+            DockPanel.Dock="Bottom"
+            Orientation="Horizontal">
+            <Button
+                x:Name="btnSave"
+                Width="100"
+                Content="{x:Static resx:ResUI.TbConfirm}"
+                IsDefault="True"
+                Style="{StaticResource DefButton}" />
+            <Button
+                x:Name="btnCancel"
+                Width="100"
+                Margin="{StaticResource MarginLeftRight8}"
+                Content="{x:Static resx:ResUI.TbCancel}"
+                IsCancel="True"
+                Style="{StaticResource DefButton}" />
+        </StackPanel>
+
+        <DataGrid
+            x:Name="lstRulesets"
+            AutoGenerateColumns="False"
+            BorderThickness="1"
+            CanUserAddRows="False"
+            CanUserResizeRows="False"
+            CanUserSortColumns="False"
+            GridLinesVisibility="All"
+            HeadersVisibility="Column"
+            Style="{StaticResource DefDataGrid}">
+            <DataGrid.ContextMenu>
+                <ContextMenu Style="{StaticResource DefContextMenu}">
+                    <MenuItem x:Name="menuRulesetAdd" Header="{x:Static resx:ResUI.menuRoutingAdvancedAdd}" />
+                    <MenuItem x:Name="menuRulesetRemove" Header="{x:Static resx:ResUI.menuRoutingAdvancedRemove}" />
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+            <DataGrid.Columns>
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding tag}"
+                    Header="tag" />
+                <DataGridTextColumn
+                    Width="80"
+                    Binding="{Binding type}"
+                    Header="type" />
+                <DataGridTextColumn
+                    Width="80"
+                    Binding="{Binding format}"
+                    Header="format" />
+                <DataGridTextColumn
+                    Width="2*"
+                    Binding="{Binding url}"
+                    Header="url" />
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding path}"
+                    Header="path" />
+                <DataGridTextColumn
+                    Width="120"
+                    Binding="{Binding download_detour}"
+                    Header="download_detour" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</base:WindowBase>

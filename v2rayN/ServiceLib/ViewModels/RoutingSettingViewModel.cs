@@ -26,6 +26,10 @@ public partial class RoutingSettingViewModel : MyReactiveObject
     public ReactiveCommand<RxVoid, RxVoid> RoutingAdvancedRemoveCmd { get; }
     public ReactiveCommand<RxVoid, RxVoid> RoutingAdvancedSetDefaultCmd { get; }
     public ReactiveCommand<RxVoid, RxVoid> RoutingAdvancedImportRulesCmd { get; }
+    public ReactiveCommand<RxVoid, RxVoid> RulesetManagerCmd { get; }
+    public ReactiveCommand<RxVoid, RxVoid> PresetAdBlockCmd { get; }
+    public ReactiveCommand<RxVoid, RxVoid> PresetStreamingCmd { get; }
+    public ReactiveCommand<RxVoid, RxVoid> PresetBypassCNCmd { get; }
 
     public bool IsModified { get; set; }
 
@@ -54,6 +58,22 @@ public partial class RoutingSettingViewModel : MyReactiveObject
         RoutingAdvancedImportRulesCmd = ReactiveCommand.CreateFromTask(async () =>
         {
             await RoutingAdvancedImportRules();
+        });
+        RulesetManagerCmd = ReactiveCommand.CreateFromTask(async () =>
+        {
+            await OpenRulesetManagerAsync();
+        }, canEditRemove);
+        PresetAdBlockCmd = ReactiveCommand.CreateFromTask(async () =>
+        {
+            await ImportPresetPackageAsync(EPresetPackage.AdBlock);
+        });
+        PresetStreamingCmd = ReactiveCommand.CreateFromTask(async () =>
+        {
+            await ImportPresetPackageAsync(EPresetPackage.Streaming);
+        });
+        PresetBypassCNCmd = ReactiveCommand.CreateFromTask(async () =>
+        {
+            await ImportPresetPackageAsync(EPresetPackage.BypassCN);
         });
 
         _ = Init();
@@ -192,6 +212,63 @@ public partial class RoutingSettingViewModel : MyReactiveObject
         {
             await RefreshRoutingItems();
             IsModified = true;
+        }
+    }
+
+    private async Task OpenRulesetManagerAsync()
+    {
+        var item = await AppManager.Instance.GetRoutingItem(SelectedSource?.Id);
+        if (item is null)
+        {
+            NoticeManager.Instance.Enqueue(ResUI.PleaseSelectRules);
+            return;
+        }
+        var vm = new RulesetManagerViewModel(item);
+        if (await AppManager.Instance.WindowDialog.ShowDialogAsync(vm) == true)
+        {
+            IsModified = true;
+        }
+    }
+
+    private async Task ImportPresetPackageAsync(EPresetPackage package)
+    {
+        var rulesJson = package switch
+        {
+            EPresetPackage.AdBlock => EmbedUtils.GetEmbedText(Global.CustomRoutingFileName + "adblock"),
+            EPresetPackage.Streaming => EmbedUtils.GetEmbedText(Global.CustomRoutingFileName + "streaming"),
+            EPresetPackage.BypassCN => EmbedUtils.GetEmbedText(Global.CustomRoutingFileName + "white"),
+            _ => null
+        };
+        if (rulesJson.IsNullOrEmpty())
+        {
+            return;
+        }
+
+        var items = await AppManager.Instance.RoutingItems();
+        var maxSort = items.Count;
+        var remarks = package switch
+        {
+            EPresetPackage.AdBlock => ResUI.PresetAdBlock,
+            EPresetPackage.Streaming => ResUI.PresetStreaming,
+            EPresetPackage.BypassCN => ResUI.PresetBypassCN,
+            _ => "Preset"
+        };
+
+        var item = new RoutingItem
+        {
+            Remarks = remarks,
+            Url = string.Empty,
+            Sort = maxSort + 1,
+        };
+        if (await ConfigHandler.AddBatchRoutingRules(item, rulesJson) == 0)
+        {
+            await RefreshRoutingItems();
+            IsModified = true;
+            NoticeManager.Instance.Enqueue(ResUI.OperationSuccess);
+        }
+        else
+        {
+            NoticeManager.Instance.Enqueue(ResUI.OperationFailed);
         }
     }
 }

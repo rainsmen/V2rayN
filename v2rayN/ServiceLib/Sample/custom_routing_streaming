@@ -1,0 +1,70 @@
+[
+  {
+    "remarks": "代理Netflix",
+    "outboundTag": "proxy",
+    "domain": [
+      "geosite:netflix"
+    ]
+  },
+  {
+    "remarks": "代理YouTube",
+    "outboundTag": "proxy",
+    "domain": [
+      "geosite:youtube"
+    ]
+  },
+  {
+    "remarks": "代理Disney+",
+    "outboundTag": "proxy",
+    "domain": [
+      "geosite:disney"
+    ]
+  },
+  {
+    "remarks": "代理HBO",
+    "outboundTag": "proxy",
+    "domain": [
+      "geosite:hbo"
+    ]
+  },
+  {
+    "remarks": "代理Spotify",
+    "outboundTag": "proxy",
+    "domain": [
+      "geosite:spotify"
+    ]
+  },
+  {
+    "remarks": "代理TikTok",
+    "outboundTag": "proxy",
+    "domain": [
+      "geosite:tiktok"
+    ]
+  },
+  {
+    "remarks": "绕过局域网IP",
+    "outboundTag": "direct",
+    "ip": [
+      "geoip:private"
+    ]
+  },
+  {
+    "remarks": "绕过中国IP",
+    "outboundTag": "direct",
+    "ip": [
+      "geoip:cn"
+    ]
+  },
+  {
+    "remarks": "绕过中国域名",
+    "outboundTag": "direct",
+    "domain": [
+      "geosite:cn"
+    ]
+  },
+  {
+    "remarks": "最终代理",
+    "port": "0-65535",
+    "outboundTag": "proxy"
+  }
+]

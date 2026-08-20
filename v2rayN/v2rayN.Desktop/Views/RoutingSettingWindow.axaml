@@ -20,6 +20,12 @@
         <Menu Margin="{StaticResource Margin4}" DockPanel.Dock="Top">
             <MenuItem x:Name="menuRoutingAdvancedAdd2" Header="{x:Static resx:ResUI.menuRoutingAdvancedAdd}" />
             <MenuItem x:Name="menuRoutingAdvancedImportRules2" Header="{x:Static resx:ResUI.menuRoutingAdvancedImportRules}" />
+            <MenuItem x:Name="menuRulesetManager2" Header="{x:Static resx:ResUI.menuRulesetManager}" />
+            <MenuItem x:Name="menuPresetPackages2" Header="{x:Static resx:ResUI.menuPresetPackages}">
+                <MenuItem x:Name="menuPresetAdBlock" Header="{x:Static resx:ResUI.PresetAdBlock}" />
+                <MenuItem x:Name="menuPresetStreaming" Header="{x:Static resx:ResUI.PresetStreaming}" />
+                <MenuItem x:Name="menuPresetBypassCN" Header="{x:Static resx:ResUI.PresetBypassCN}" />
+            </MenuItem>
         </Menu>
 
         <Grid
