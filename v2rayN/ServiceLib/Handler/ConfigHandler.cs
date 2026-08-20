@@ -195,7 +195,64 @@ public static class ConfigHandler
             config.SystemProxyItem.SystemProxyExceptions = Utils.IsWindows() ? Global.SystemProxyExceptionsWindows : Global.SystemProxyExceptionsLinux;
         }
 
+        MigrateCoreTypes(config);
+
         return config;
+    }
+
+    private static readonly HashSet<int> _removedCoreTypeValues =
+    [
+        1,   // v2fly
+        4,   // v2fly_v5
+        13,  // mihomo
+        21,  // hysteria
+        22,  // naiveproxy
+        23,  // tuic
+        25,  // juicity
+        26,  // hysteria2
+        29,  // shadowquic
+    ];
+
+    private static void MigrateCoreTypes(Config config)
+    {
+        var migrated = false;
+
+        if (config.CoreTypeItem != null)
+        {
+            foreach (var item in config.CoreTypeItem)
+            {
+                if (_removedCoreTypeValues.Contains((int)item.CoreType))
+                {
+                    item.CoreType = ECoreType.sing_box;
+                    migrated = true;
+                }
+            }
+        }
+
+        try
+        {
+            var dbPath = Utils.GetConfigPath("guiNDB.db");
+            if (File.Exists(dbPath))
+            {
+                var backupPath = $"{dbPath}.bak";
+                if (!File.Exists(backupPath))
+                {
+                    File.Copy(dbPath, backupPath, true);
+                }
+
+                var db = SQLiteHelper.Instance;
+                db.Execute($"UPDATE ProfileItem SET CoreType = {(int)ECoreType.sing_box} WHERE CoreType IN ({string.Join(",", _removedCoreTypeValues)})");
+            }
+        }
+        catch (Exception ex)
+        {
+            Logging.SaveLog(_tag, ex);
+        }
+
+        if (migrated)
+        {
+            _ = SaveConfig(config);
+        }
     }
 
     /// <summary>
