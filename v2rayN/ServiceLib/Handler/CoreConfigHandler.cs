@@ -15,11 +15,7 @@ public static class CoreConfigHandler
 
         if (node.ConfigType == EConfigType.Custom)
         {
-            result = node.CoreType switch
-            {
-                ECoreType.mihomo => await new CoreConfigClashService(config, context.IsTunEnabled).GenerateClientCustomConfig(node, fileName),
-                _ => await GenerateClientCustomConfig(node, fileName)
-            };
+            result = await GenerateClientCustomConfig(node, fileName);
         }
         else if (context.RunCoreType == ECoreType.sing_box)
         {

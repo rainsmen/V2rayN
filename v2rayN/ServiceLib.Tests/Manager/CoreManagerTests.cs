@@ -4,7 +4,6 @@ public class CoreManagerTests
 {
     [Test]
     [Arguments(ECoreType.sing_box)]
-    [Arguments(ECoreType.mihomo)]
     [Arguments(ECoreType.Xray)]
     public async Task ShouldRunAsSudo_TunLaunchOnNonWindows_RequiresElevation(ECoreType coreType)
     {
@@ -29,8 +28,8 @@ public class CoreManagerTests
     }
 
     [Test]
-    [Arguments(ECoreType.v2fly)]
-    [Arguments(ECoreType.hysteria)]
+    [Arguments(ECoreType.brook)]
+    [Arguments(ECoreType.mieru)]
     [Arguments(null)]
     public async Task ShouldRunAsSudo_UnsupportedCoreType_ShouldNotElevate(ECoreType? coreType)
     {

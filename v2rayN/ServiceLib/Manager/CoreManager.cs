@@ -298,7 +298,7 @@ public class CoreManager
     public static bool ShouldRunAsSudo(bool isTunLaunch, ECoreType? coreType, bool isNonWindows)
     {
         return isTunLaunch
-            && coreType is ECoreType.sing_box or ECoreType.mihomo or ECoreType.Xray
+            && coreType is ECoreType.sing_box or ECoreType.Xray
             && isNonWindows;
     }
 

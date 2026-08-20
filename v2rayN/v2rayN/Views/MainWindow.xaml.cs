@@ -425,9 +425,7 @@ public partial class MainWindow
     private void AddHelpMenuItem()
     {
         var coreInfo = CoreInfoManager.Instance.GetCoreInfo();
-        foreach (var it in coreInfo
-            .Where(t => t.CoreType is not ECoreType.v2fly
-                        and not ECoreType.hysteria))
+        foreach (var it in coreInfo)
         {
             var item = new MenuItem()
             {

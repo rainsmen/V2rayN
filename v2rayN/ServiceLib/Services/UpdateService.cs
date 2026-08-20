@@ -226,14 +226,8 @@ public class UpdateService(Config config, Func<bool, string, Task> updateFunc)
             var version = string.Empty;
             switch (type)
             {
-                case ECoreType.v2fly:
                 case ECoreType.Xray:
-                case ECoreType.v2fly_v5:
                     version = Regex.Match(echo, $"{coreInfo.Match} ([0-9.]+) \\(").Groups[1].Value;
-                    break;
-
-                case ECoreType.mihomo:
-                    version = Regex.Match(echo, $"v[0-9.]+").Groups[0].Value;
                     break;
 
                 case ECoreType.sing_box:
@@ -262,19 +256,10 @@ public class UpdateService(Config config, Func<bool, string, Task> updateFunc)
             string? url;
             switch (type)
             {
-                case ECoreType.v2fly:
                 case ECoreType.Xray:
-                case ECoreType.v2fly_v5:
                     {
                         curVersion = await GetCoreVersion(type);
                         message = string.Format(ResUI.IsLatestCore, type, curVersion.ToVersionString("v"));
-                        url = string.Format(coreUrl, version.ToVersionString("v"));
-                        break;
-                    }
-                case ECoreType.mihomo:
-                    {
-                        curVersion = await GetCoreVersion(type);
-                        message = string.Format(ResUI.IsLatestCore, type, curVersion);
                         url = string.Format(coreUrl, version.ToVersionString("v"));
                         break;
                     }

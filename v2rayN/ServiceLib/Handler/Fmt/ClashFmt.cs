@@ -10,7 +10,7 @@ public class ClashFmt : BaseFmt
 
             var profileItem = new ProfileItem
             {
-                CoreType = ECoreType.mihomo,
+                CoreType = ECoreType.sing_box,
                 Address = fileName,
                 Remarks = subRemarks ?? "clash_custom"
             };
