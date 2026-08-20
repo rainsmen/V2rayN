@@ -1011,6 +1011,9 @@
   <data name="TbdomainStrategy4Singbox" xml:space="preserve">
     <value>Stratégie résolution domaine (sing-box)</value>
   </data>
+  <data name="TbEnableAdBlock" xml:space="preserve">
+    <value>Activer le blocage des publicités</value>
+  </data>
   <data name="TbSettingsMux4SboxProtocol" xml:space="preserve">
     <value>Protocole de multiplexage Mux (sing-box)</value>
   </data>

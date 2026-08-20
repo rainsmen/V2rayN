@@ -1014,6 +1014,9 @@
   <data name="TbdomainStrategy4Singbox" xml:space="preserve">
     <value>استراتژی دامنه sing-box</value>
   </data>
+  <data name="TbEnableAdBlock" xml:space="preserve">
+    <value>فعال کردن مسدودسازی تبلیغات</value>
+  </data>
   <data name="TbSettingsMux4SboxProtocol" xml:space="preserve">
     <value>پروتکل sing-box Mux</value>
   </data>

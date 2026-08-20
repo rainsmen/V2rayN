@@ -166,6 +166,16 @@ public partial class CoreConfigSingboxService
 
         _coreConfig.dns.rules.Add(new() { ip_accept_any = true, server = Global.SingboxHostsDNSTag });
 
+        if (_config.RoutingBasicItem.EnableAdBlock)
+        {
+            _coreConfig.dns.rules.Add(new()
+            {
+                action = "predefined",
+                rcode = "NXDOMAIN",
+                rule_set = [.. Global.AdBlockRulesetUrls.Select(k => k.Key)]
+            });
+        }
+
         if (context.ProtectDomainList.Count > 0)
         {
             _coreConfig.dns.rules.Add(new()

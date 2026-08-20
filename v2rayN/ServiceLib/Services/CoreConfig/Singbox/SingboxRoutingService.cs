@@ -235,6 +235,15 @@ public partial class CoreConfigSingboxService
                 clash_mode = nameof(ERuleMode.Global)
             });
 
+            if (_config.RoutingBasicItem.EnableAdBlock)
+            {
+                _coreConfig.route.rules.Add(new()
+                {
+                    action = "reject",
+                    rule_set = [.. Global.AdBlockRulesetUrls.Select(k => k.Key)]
+                });
+            }
+
             var domainStrategy = _config.RoutingBasicItem.DomainStrategy4Singbox.NullIfEmpty();
             var routing = context.RoutingItem;
             if (routing.DomainStrategy4Singbox.IsNotEmpty())

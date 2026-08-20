@@ -3034,6 +3034,15 @@ namespace ServiceLib.Resx {
         }
         
         /// <summary>
+        ///   查找类似 Enable Ad Block 的本地化字符串。
+        /// </summary>
+        public static string TbEnableAdBlock {
+            get {
+                return ResourceManager.GetString("TbEnableAdBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Domestic DNS 的本地化字符串。
         /// </summary>
         public static string TbDomesticDNS {

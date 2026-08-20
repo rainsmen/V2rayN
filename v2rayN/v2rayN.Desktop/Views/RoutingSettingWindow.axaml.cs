@@ -26,6 +26,7 @@ public partial class RoutingSettingWindow : WindowBase<RoutingSettingViewModel>
 
             this.Bind(ViewModel, vm => vm.DomainStrategy, v => v.cmbdomainStrategy.SelectedValue).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.DomainStrategy4Singbox, v => v.cmbdomainStrategy4Singbox.SelectedValue).DisposeWith(disposables);
+            this.Bind(ViewModel, vm => vm.EnableAdBlock, v => v.togEnableAdBlock.IsChecked).DisposeWith(disposables);
 
             this.BindCommand(ViewModel, vm => vm.RoutingAdvancedAddCmd, v => v.menuRoutingAdvancedAdd).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.RoutingAdvancedAddCmd, v => v.menuRoutingAdvancedAdd2).DisposeWith(disposables);

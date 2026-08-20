@@ -184,6 +184,13 @@ public class Global
         @"https://raw.githubusercontent.com/chocolate4u/Iran-sing-box-rules/rule-set/{1}.srs"
     ];
 
+    public static readonly List<KeyValuePair<string, string>> AdBlockRulesetUrls =
+    [
+        new("geosite-category-ads-all", @"https://raw.githubusercontent.com/2dust/sing-box-rules/rule-set-geosite/geosite-category-ads-all.srs"),
+        new("geosite-anti-ad", @"https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/sing-box/rule-set/geosite-anti-ad.srs"),
+        new("geosite-reject", @"https://raw.githubusercontent.com/Loyalsoldier/sing-box-rules/release/rule-set-geosite/geosite-reject.srs")
+    ];
+
     public static readonly List<string> RoutingRulesSources =
     [
         "",

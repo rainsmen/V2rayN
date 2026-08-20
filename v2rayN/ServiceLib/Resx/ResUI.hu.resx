@@ -1014,6 +1014,9 @@
   <data name="TbdomainStrategy4Singbox" xml:space="preserve">
     <value>sing-box tartomány stratégia</value>
   </data>
+  <data name="TbEnableAdBlock" xml:space="preserve">
+    <value>Hirdetésblokkolás engedélyezése</value>
+  </data>
   <data name="TbSettingsMux4SboxProtocol" xml:space="preserve">
     <value>sing-box Mux protokoll</value>
   </data>

@@ -74,6 +74,18 @@ public partial class CoreConfigSingboxService
             }
         }
 
+        //Append ad-block rule sets when enabled
+        if (_config.RoutingBasicItem.EnableAdBlock)
+        {
+            foreach (var kvp in Global.AdBlockRulesetUrls)
+            {
+                if (!ruleSets.Contains(kvp.Key))
+                {
+                    ruleSets.Add(kvp.Key);
+                }
+            }
+        }
+
         //Local srs files address
         var localSrss = Utils.GetBinPath("srss");
 

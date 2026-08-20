@@ -1011,6 +1011,9 @@
   <data name="TbdomainStrategy4Singbox" xml:space="preserve">
     <value>sing-box 域名解析策略</value>
   </data>
+  <data name="TbEnableAdBlock" xml:space="preserve">
+    <value>啟用廣告攔截</value>
+  </data>
   <data name="TbSettingsMux4SboxProtocol" xml:space="preserve">
     <value>sing-box Mux 多路復用協定</value>
   </data>

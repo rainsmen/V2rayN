@@ -19,6 +19,9 @@ public partial class RoutingSettingViewModel : MyReactiveObject
     [Reactive]
     public partial string DomainStrategy4Singbox { get; set; }
 
+    [Reactive]
+    public partial bool EnableAdBlock { get; set; }
+
     public ReactiveCommand<RxVoid, RxVoid> RoutingAdvancedAddCmd { get; }
     public ReactiveCommand<RxVoid, RxVoid> RoutingAdvancedRemoveCmd { get; }
     public ReactiveCommand<RxVoid, RxVoid> RoutingAdvancedSetDefaultCmd { get; }
@@ -55,10 +58,11 @@ public partial class RoutingSettingViewModel : MyReactiveObject
 
         _ = Init();
 
-        // Auto-save DomainStrategy when changed
+        // Auto-save DomainStrategy and EnableAdBlock when changed
         this.WhenAnyValue(
             x => x.DomainStrategy,
-            x => x.DomainStrategy4Singbox)
+            x => x.DomainStrategy4Singbox,
+            x => x.EnableAdBlock)
             .Skip(1)
             .DistinctUntilChanged()
             .Subscribe(x =>
@@ -74,6 +78,7 @@ public partial class RoutingSettingViewModel : MyReactiveObject
 
         DomainStrategy = _config.RoutingBasicItem.DomainStrategy;
         DomainStrategy4Singbox = _config.RoutingBasicItem.DomainStrategy4Singbox;
+        EnableAdBlock = _config.RoutingBasicItem.EnableAdBlock;
 
         await ConfigHandler.InitBuiltinRouting(_config);
         await RefreshRoutingItems();
@@ -112,6 +117,7 @@ public partial class RoutingSettingViewModel : MyReactiveObject
     {
         _config.RoutingBasicItem.DomainStrategy = DomainStrategy;
         _config.RoutingBasicItem.DomainStrategy4Singbox = DomainStrategy4Singbox;
+        _config.RoutingBasicItem.EnableAdBlock = EnableAdBlock;
         await ConfigHandler.SaveConfig(_config);
     }
 

@@ -172,6 +172,7 @@ public class RoutingBasicItem
     public string DomainStrategy { get; set; }
     public string DomainStrategy4Singbox { get; set; }
     public string RoutingIndexId { get; set; }
+    public bool EnableAdBlock { get; set; }
 }
 
 [Serializable]

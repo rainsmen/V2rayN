@@ -425,6 +425,22 @@ public class UpdateService(Config config, Func<bool, string, Task> updateFunc)
         // Append default items
         geoSiteFiles.AddRange(["google", "cn", "geolocation-cn", "category-ads-all"]);
 
+        // Append ad-block rule sets when enabled
+        if (_config.RoutingBasicItem.EnableAdBlock)
+        {
+            var srssPath = Utils.GetBinPath("srss");
+            if (!Directory.Exists(srssPath))
+            {
+                Directory.CreateDirectory(srssPath);
+            }
+            foreach (var kvp in Global.AdBlockRulesetUrls)
+            {
+                var fileName = $"{kvp.Key}.srs";
+                var targetPath = Path.Combine(srssPath, fileName);
+                await DownloadGeoFile(kvp.Value, fileName, targetPath);
+            }
+        }
+
         // Download files
         var path = Utils.GetBinPath("srss");
         if (!Directory.Exists(path))
