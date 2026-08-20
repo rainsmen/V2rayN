@@ -13,19 +13,23 @@ permissions:
 jobs:
   build-and-release:
     strategy:
+      fail-fast: false
       matrix:
         include:
           - target: windows
+            rid: win-x64
             project: ./v2rayN/v2rayN.csproj
             os: windows-latest
             ext: zip
             extra-opts: '-p:EnableWindowsTargeting=true'
           - target: linux
+            rid: linux-x64
             project: ./v2rayN.Desktop/v2rayN.Desktop.csproj
             os: ubuntu-24.04
             ext: tar.gz
             extra-opts: ''
           - target: osx
+            rid: osx-x64
             project: ./v2rayN.Desktop/v2rayN.Desktop.csproj
             os: macos-latest
             ext: tar.gz
@@ -46,12 +50,12 @@ jobs:
     - name: Build v2rayN
       shell: bash
       working-directory: ./v2rayN
-      run: dotnet publish ${{ matrix.project }} -c Release -r ${{ matrix.target }}-x64 -p:SelfContained=true ${{ matrix.extra-opts }} -o release
+      run: dotnet publish ${{ matrix.project }} -c Release -r ${{ matrix.rid }} -p:SelfContained=true ${{ matrix.extra-opts }} -o release
 
     - name: Build AmazTool
       shell: bash
       working-directory: ./v2rayN
-      run: dotnet publish ./AmazTool/AmazTool.csproj -c Release -r ${{ matrix.target }}-x64 -p:SelfContained=true -p:PublishTrimmed=true ${{ matrix.extra-opts }} -o release
+      run: dotnet publish ./AmazTool/AmazTool.csproj -c Release -r ${{ matrix.rid }} -p:SelfContained=true -p:PublishTrimmed=true ${{ matrix.extra-opts }} -o release
 
     - name: Remove debug symbols
       shell: bash
@@ -61,10 +65,10 @@ jobs:
       shell: bash
       run: |
         cd v2rayN
-        tar -czf v2rayN-${{ matrix.target }}-x64.tar.gz -C release .
-        # Also create zip for windows
         if [ "${{ matrix.target }}" = "windows" ]; then
           cd release && 7z a -tZip ../../v2rayN/v2rayN-${{ matrix.target }}-x64.zip . && cd ..
+        else
+          tar -czf v2rayN-${{ matrix.target }}-x64.tar.gz -C release .
         fi
 
     - name: Upload to Release
@@ -74,7 +78,5 @@ jobs:
         files: |
           v2rayN/v2rayN-${{ matrix.target }}-x64.tar.gz
           v2rayN/v2rayN-${{ matrix.target }}-x64.zip
-        body: |
-          See [README](https://github.com/rainsmen/V2rayN#readme) for details.
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
