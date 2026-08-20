@@ -1086,6 +1086,12 @@
   <data name="TbRuleMatchingTips" xml:space="preserve">
     <value>(Domain or IP or ProcName) and Port and Protocol and InboundTag =&gt; OutboundTag</value>
   </data>
+  <data name="TbRuleSourceIpTips" xml:space="preserve">
+    <value>فهرست IP/CIDR منبع با کاما جدا شود، مانند 10.0.0.0/8,192.168.1.1</value>
+  </data>
+  <data name="TbRuleActionTypeTips" xml:space="preserve">
+    <value>اکشن قانون sing-box؛ هنگام تنظیم، outboundTag را بازنویسی می‌کند (Xray، sniff/resolve/hijack-dns را نادیده می‌گیرد)</value>
+  </data>
   <data name="TbAutoScrollToEnd" xml:space="preserve">
     <value>خودکار ScrollToEnd</value>
   </data>

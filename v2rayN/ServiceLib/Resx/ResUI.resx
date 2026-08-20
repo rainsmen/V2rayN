@@ -1092,6 +1092,12 @@
   <data name="TbRuleMatchingTips" xml:space="preserve">
     <value>(Domain or IP or Proc Name) and Port and Protocol and Inbound Tag =&gt; Outbound Tag</value>
   </data>
+  <data name="TbRuleSourceIpTips" xml:space="preserve">
+    <value>Comma-separated source IP/CIDR list, e.g. 10.0.0.0/8,192.168.1.1</value>
+  </data>
+  <data name="TbRuleActionTypeTips" xml:space="preserve">
+    <value>sing-box rule action; overrides outboundTag when set (Xray ignores sniff/resolve/hijack-dns)</value>
+  </data>
   <data name="TbAutoScrollToEnd" xml:space="preserve">
     <value>Auto scroll to end</value>
   </data>

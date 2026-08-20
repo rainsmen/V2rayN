@@ -17,6 +17,9 @@ public partial class RoutingRuleDetailsViewModel : MyReactiveObject, ICloseable
     public partial string IP { get; set; }
 
     [Reactive]
+    public partial string SourceIP { get; set; }
+
+    [Reactive]
     public partial string Process { get; set; }
 
     [Reactive]
@@ -27,6 +30,15 @@ public partial class RoutingRuleDetailsViewModel : MyReactiveObject, ICloseable
 
     [Reactive]
     public partial string OutboundTag { get; set; }
+
+    [Reactive]
+    public partial string? ActionType { get; set; }
+
+    [Reactive]
+    public partial string? LogicType { get; set; }
+
+    [Reactive]
+    public partial bool Invert { get; set; }
 
     [Reactive]
     public partial string Remarks { get; set; }
@@ -70,6 +82,7 @@ public partial class RoutingRuleDetailsViewModel : MyReactiveObject, ICloseable
 
         Domain = Utils.List2String(SelectedSource.Domain, true);
         IP = Utils.List2String(SelectedSource.Ip, true);
+        SourceIP = Utils.List2String(SelectedSource.SourceIp, true);
         Process = Utils.List2String(SelectedSource.Process, true);
         RuleType = SelectedSource.RuleType?.ToString();
         OutboundTag = SelectedSource.OutboundTag;
@@ -77,24 +90,30 @@ public partial class RoutingRuleDetailsViewModel : MyReactiveObject, ICloseable
         Port = SelectedSource.Port;
         Network = SelectedSource.Network;
         Enabled = SelectedSource.Enabled;
+        ActionType = SelectedSource.ActionType;
+        LogicType = SelectedSource.LogicType;
+        Invert = SelectedSource.Invert ?? false;
     }
 
     private async Task SaveRulesAsync()
     {
         Domain = Utils.Convert2Comma(Domain);
         IP = Utils.Convert2Comma(IP);
+        SourceIP = Utils.Convert2Comma(SourceIP);
         Process = Utils.ParseProcess(Process);
 
         if (AutoSort)
         {
             SelectedSource.Domain = Utils.String2ListSorted(Domain);
             SelectedSource.Ip = Utils.String2ListSorted(IP);
+            SelectedSource.SourceIp = Utils.String2ListSorted(SourceIP);
             SelectedSource.Process = Utils.String2ListSorted(Process);
         }
         else
         {
             SelectedSource.Domain = Utils.String2List(Domain);
             SelectedSource.Ip = Utils.String2List(IP);
+            SelectedSource.SourceIp = Utils.String2List(SourceIP);
             SelectedSource.Process = Utils.String2List(Process);
         }
         SelectedSource.Protocol = ProtocolItems?.ToList();
@@ -105,9 +124,13 @@ public partial class RoutingRuleDetailsViewModel : MyReactiveObject, ICloseable
         SelectedSource.Port = Port;
         SelectedSource.Network = Network;
         SelectedSource.Enabled = Enabled;
+        SelectedSource.ActionType = ActionType.IsNullOrEmpty() ? null : ActionType;
+        SelectedSource.LogicType = LogicType.IsNullOrEmpty() ? null : LogicType;
+        SelectedSource.Invert = Invert;
 
         var hasRule = SelectedSource.Domain?.Count > 0
           || SelectedSource.Ip?.Count > 0
+          || SelectedSource.SourceIp?.Count > 0
           || SelectedSource.Protocol?.Count > 0
           || SelectedSource.Process?.Count > 0
           || SelectedSource.Port.IsNotEmpty()

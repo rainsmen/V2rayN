@@ -554,6 +554,24 @@ public class Global
         "tcp,udp"
     ];
 
+    public static readonly List<string> RuleActionTypes =
+    [
+        "",
+        "route",
+        "route-options",
+        "reject",
+        "sniff",
+        "resolve",
+        "hijack-dns"
+    ];
+
+    public static readonly List<string> RuleLogicTypes =
+    [
+        "",
+        "and",
+        "or"
+    ];
+
     public static readonly List<string> destOverrideProtocols =
     [
         "http",

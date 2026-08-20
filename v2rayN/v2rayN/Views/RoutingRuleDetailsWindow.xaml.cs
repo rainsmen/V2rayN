@@ -15,6 +15,8 @@ public partial class RoutingRuleDetailsWindow
         clbInboundTag.ItemsSource = Global.InboundTags;
         cmbNetwork.ItemsSource = Global.RuleNetworks;
         cmbRuleType.ItemsSource = Utils.GetEnumNames<ERuleType>().AppendEmpty();
+        cmbActionType.ItemsSource = Global.RuleActionTypes;
+        cmbLogicType.ItemsSource = Global.RuleLogicTypes;
 
         this.WhenActivated(disposables =>
         {
@@ -30,9 +32,13 @@ public partial class RoutingRuleDetailsWindow
             this.Bind(ViewModel, vm => vm.Enabled, v => v.togEnabled.IsChecked).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.Domain, v => v.txtDomain.Text).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.IP, v => v.txtIP.Text).DisposeWith(disposables);
+            this.Bind(ViewModel, vm => vm.SourceIP, v => v.txtSourceIP.Text).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.Process, v => v.txtProcess.Text).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.AutoSort, v => v.chkAutoSort.IsChecked).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.RuleType, v => v.cmbRuleType.Text).DisposeWith(disposables);
+            this.Bind(ViewModel, vm => vm.ActionType, v => v.cmbActionType.Text).DisposeWith(disposables);
+            this.Bind(ViewModel, vm => vm.LogicType, v => v.cmbLogicType.Text).DisposeWith(disposables);
+            this.Bind(ViewModel, vm => vm.Invert, v => v.togInvert.IsChecked).DisposeWith(disposables);
 
             this.BindCommand(ViewModel, vm => vm.SelectProfileCmd, v => v.btnSelectProfile).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.SaveCmd, v => v.btnSave).DisposeWith(disposables);

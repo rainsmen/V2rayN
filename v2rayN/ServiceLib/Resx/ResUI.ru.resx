@@ -1092,6 +1092,12 @@
   <data name="TbRuleMatchingTips" xml:space="preserve">
     <value>(Домен или IP или имя процесса) и порт, и протокол, и InboundTag =&gt; OutboundTag</value>
   </data>
+  <data name="TbRuleSourceIpTips" xml:space="preserve">
+    <value>Список исходных IP/CIDR через запятую, напр. 10.0.0.0/8,192.168.1.1</value>
+  </data>
+  <data name="TbRuleActionTypeTips" xml:space="preserve">
+    <value>Действие правила sing-box; переопределяет outboundTag при установке (Xray игнорирует sniff/resolve/hijack-dns)</value>
+  </data>
   <data name="TbAutoScrollToEnd" xml:space="preserve">
     <value>Автоматическая прокрутка в конец</value>
   </data>

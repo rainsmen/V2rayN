@@ -59,6 +59,17 @@ public partial class CoreConfigV2rayService
                             continue;
                         }
 
+                        // Downgrade sing-box ActionType to Xray outboundTag mapping
+                        if (item.ActionType.IsNotEmpty())
+                        {
+                            item.OutboundTag = item.ActionType switch
+                            {
+                                "reject" => Global.BlockTag,
+                                "sniff" or "resolve" or "hijack-dns" => null, // Xray ignores these actions
+                                _ => item.OutboundTag
+                            };
+                        }
+
                         var item2 = JsonUtils.Deserialize<RulesItem4Ray>(JsonUtils.Serialize(item));
                         GenRoutingUserRule(item2);
                     }

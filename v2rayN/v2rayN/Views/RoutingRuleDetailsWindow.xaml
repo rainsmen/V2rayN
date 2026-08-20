@@ -27,6 +27,9 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -220,6 +223,89 @@
                 VerticalAlignment="Center"
                 Style="{StaticResource ToolbarTextBlock}"
                 Text="{x:Static resx:ResUI.TbRoutingTips}" />
+
+            <TextBlock
+                Grid.Row="7"
+                Grid.Column="0"
+                Margin="{StaticResource Margin4}"
+                VerticalAlignment="Center"
+                Style="{StaticResource ToolbarTextBlock}"
+                Text="source_ip" />
+            <TextBox
+                x:Name="txtSourceIP"
+                Grid.Row="7"
+                Grid.Column="1"
+                Width="200"
+                Margin="{StaticResource Margin4}"
+                HorizontalAlignment="Left"
+                Style="{StaticResource DefTextBox}" />
+            <TextBlock
+                Grid.Row="7"
+                Grid.Column="2"
+                Margin="{StaticResource Margin4}"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Style="{StaticResource ToolbarTextBlock}"
+                Text="{x:Static resx:ResUI.TbRuleSourceIpTips}" />
+
+            <TextBlock
+                Grid.Row="8"
+                Grid.Column="0"
+                Margin="{StaticResource Margin4}"
+                VerticalAlignment="Center"
+                Style="{StaticResource ToolbarTextBlock}"
+                Text="actionType" />
+            <ComboBox
+                x:Name="cmbActionType"
+                Grid.Row="8"
+                Grid.Column="1"
+                Width="200"
+                Margin="{StaticResource Margin4}"
+                MaxDropDownHeight="1000"
+                Style="{StaticResource DefComboBox}" />
+            <TextBlock
+                Grid.Row="8"
+                Grid.Column="2"
+                Margin="{StaticResource Margin4}"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Style="{StaticResource ToolbarTextBlock}"
+                Text="{x:Static resx:ResUI.TbRuleActionTypeTips}" />
+
+            <TextBlock
+                Grid.Row="9"
+                Grid.Column="0"
+                Margin="{StaticResource Margin4}"
+                VerticalAlignment="Center"
+                Style="{StaticResource ToolbarTextBlock}"
+                Text="logicType" />
+            <ComboBox
+                x:Name="cmbLogicType"
+                Grid.Row="9"
+                Grid.Column="1"
+                Width="200"
+                Margin="{StaticResource Margin4}"
+                MaxDropDownHeight="1000"
+                Style="{StaticResource DefComboBox}" />
+            <StackPanel
+                Grid.Row="9"
+                Grid.Column="2"
+                Margin="{StaticResource Margin4}"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Orientation="Horizontal">
+                <ToggleButton
+                    x:Name="togInvert"
+                    Margin="{StaticResource Margin4}"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource MaterialDesignSwitchToggleButton}" />
+                <TextBlock
+                    Margin="{StaticResource Margin4}"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource ToolbarTextBlock}"
+                    Text="invert" />
+            </StackPanel>
         </Grid>
 
         <StackPanel

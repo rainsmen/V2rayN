@@ -3826,6 +3826,24 @@ namespace ServiceLib.Resx {
         }
         
         /// <summary>
+        ///   查找类似 Comma-separated source IP/CIDR list, e.g. 10.0.0.0/8,192.168.1.1 的本地化字符串。
+        /// </summary>
+        public static string TbRuleSourceIpTips {
+            get {
+                return ResourceManager.GetString("TbRuleSourceIpTips", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 sing-box rule action; overrides outboundTag when set (Xray ignores sniff/resolve/hijack-dns) 的本地化字符串。
+        /// </summary>
+        public static string TbRuleActionTypeTips {
+            get {
+                return ResourceManager.GetString("TbRuleActionTypeTips", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Rule object Doc 的本地化字符串。
         /// </summary>
         public static string TbRuleobjectDoc {

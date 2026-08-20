@@ -353,7 +353,12 @@ public partial class CoreConfigSingboxService
             var rules = _coreConfig.route.rules;
 
             var rule = new Rule4Sbox();
-            if (item.OutboundTag == "block")
+            var hasActionType = item.ActionType.IsNotEmpty();
+            if (hasActionType)
+            {
+                rule.action = item.ActionType;
+            }
+            else if (item.OutboundTag == "block")
             {
                 rule.action = "reject";
             }
@@ -362,6 +367,10 @@ public partial class CoreConfigSingboxService
                 rule.outbound = item.OutboundTag;
             }
 
+            if (item.SourceIp?.Count > 0)
+            {
+                rule.source_ip_cidr = item.SourceIp;
+            }
             if (item.Port.IsNotEmpty())
             {
                 var portRanges = item.Port.Split(',').Where(it => it.Contains('-')).Select(it => it.Replace("-", ":")).ToList();
@@ -385,6 +394,7 @@ public partial class CoreConfigSingboxService
             var rule1 = JsonUtils.DeepCopy(rule);
             var rule2 = JsonUtils.DeepCopy(rule);
             var rule3 = JsonUtils.DeepCopy(rule);
+            Action<Rule4Sbox> applyInvert = r => { if (item.Invert == true) r.invert = true; };
 
             var hasDomainIp = false;
             if (item.Domain?.Count > 0)
@@ -399,6 +409,7 @@ public partial class CoreConfigSingboxService
                 }
                 if (countDomain > 0)
                 {
+                    applyInvert(rule1);
                     rules.Add(rule1);
                     hasDomainIp = true;
                 }
@@ -457,6 +468,7 @@ public partial class CoreConfigSingboxService
                 }
                 if (countIp > 0)
                 {
+                    applyInvert(rule2);
                     rules.Add(rule2);
                     hasDomainIp = true;
                 }
@@ -496,20 +508,23 @@ public partial class CoreConfigSingboxService
 
                 if (ruleProcName.process_name.Count > 0)
                 {
+                    applyInvert(ruleProcName);
                     rules.Add(ruleProcName);
                     hasDomainIp = true;
                 }
 
                 if (ruleProcPath.process_path.Count > 0)
                 {
+                    applyInvert(ruleProcPath);
                     rules.Add(ruleProcPath);
                     hasDomainIp = true;
                 }
             }
 
             if (!hasDomainIp
-                && (rule.port != null || rule.port_range != null || rule.protocol != null || rule.inbound != null || rule.network != null))
+                && (rule.port != null || rule.port_range != null || rule.protocol != null || rule.inbound != null || rule.network != null || rule.source_ip_cidr != null))
             {
+                applyInvert(rule);
                 rules.Add(rule);
             }
         }

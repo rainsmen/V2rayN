@@ -1083,6 +1083,12 @@
   <data name="TbRuleMatchingTips" xml:space="preserve">
     <value>(Domaine ou IP ou nom de processus) avec Port et Protocole et InboundTag =&gt; OutboundTag</value>
   </data>
+  <data name="TbRuleSourceIpTips" xml:space="preserve">
+    <value>Liste d'IP/CIDR source séparée par des virgules, ex. 10.0.0.0/8,192.168.1.1</value>
+  </data>
+  <data name="TbRuleActionTypeTips" xml:space="preserve">
+    <value>Action de règle sing-box ; remplace outboundTag lorsqu'elle est définie (Xray ignore sniff/resolve/hijack-dns)</value>
+  </data>
   <data name="TbAutoScrollToEnd" xml:space="preserve">
     <value>Défilement automatique vers la fin</value>
   </data>

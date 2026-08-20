@@ -1086,6 +1086,12 @@
   <data name="TbRuleMatchingTips" xml:space="preserve">
     <value>(Tartomány vagy IP vagy folyamatnév) és port és protokoll és bejövő címke =&gt; kimenő címke</value>
   </data>
+  <data name="TbRuleSourceIpTips" xml:space="preserve">
+    <value>Vesszővel elválasztott forrás IP/CIDR lista, pl. 10.0.0.0/8,192.168.1.1</value>
+  </data>
+  <data name="TbRuleActionTypeTips" xml:space="preserve">
+    <value>sing-box szabályművelet; beállításkor felülírja az outboundTag értéket (Xray figyelmen kívül hagyja a sniff/resolve/hijack-dns-t)</value>
+  </data>
   <data name="TbAutoScrollToEnd" xml:space="preserve">
     <value>Automatikus görgetés a végére</value>
   </data>

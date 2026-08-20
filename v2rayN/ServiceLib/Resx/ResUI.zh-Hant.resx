@@ -1089,6 +1089,12 @@
   <data name="TbRuleMatchingTips" xml:space="preserve">
     <value>(Domain 或 IP 或 行程名) 與 Port 與 Protocol 與 InboundTag =&gt; OutboundTag</value>
   </data>
+  <data name="TbRuleSourceIpTips" xml:space="preserve">
+    <value>逗號分隔的來源 IP/CIDR 列表，如 10.0.0.0/8,192.168.1.1</value>
+  </data>
+  <data name="TbRuleActionTypeTips" xml:space="preserve">
+    <value>sing-box 規則動作；設定後覆蓋 outboundTag（Xray 忽略 sniff/resolve/hijack-dns）</value>
+  </data>
   <data name="TbAutoScrollToEnd" xml:space="preserve">
     <value>自動滾動到末尾</value>
   </data>

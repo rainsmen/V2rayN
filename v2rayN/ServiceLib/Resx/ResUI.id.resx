@@ -1086,6 +1086,12 @@
   <data name="TbRuleMatchingTips" xml:space="preserve">
     <value>(Domain atau IP atau Nama Proses) dan Port dan Protokol dan Tag Inbound =&gt; Tag Outbound</value>
   </data>
+  <data name="TbRuleSourceIpTips" xml:space="preserve">
+    <value>Daftar IP/CIDR sumber yang dipisahkan koma, cth. 10.0.0.0/8,192.168.1.1</value>
+  </data>
+  <data name="TbRuleActionTypeTips" xml:space="preserve">
+    <value>Aksi aturan sing-box; menimpa outboundTag saat diatur (Xray mengabaikan sniff/resolve/hijack-dns)</value>
+  </data>
   <data name="TbAutoScrollToEnd" xml:space="preserve">
     <value>Gulir otomatis ke akhir</value>
   </data>

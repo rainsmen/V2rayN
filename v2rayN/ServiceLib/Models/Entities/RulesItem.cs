@@ -13,6 +13,10 @@ public class RulesItem
     public List<string>? Domain { get; set; }
     public List<string>? Protocol { get; set; }
     public List<string>? Process { get; set; }
+    public List<string>? SourceIp { get; set; }
+    public string? ActionType { get; set; }
+    public string? LogicType { get; set; }
+    public bool? Invert { get; set; }
     public bool Enabled { get; set; } = true;
     public string? Remarks { get; set; }
     public ERuleType? RuleType { get; set; }
