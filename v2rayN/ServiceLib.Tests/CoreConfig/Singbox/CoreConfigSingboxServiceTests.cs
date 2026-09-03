@@ -846,4 +846,58 @@ public class CoreConfigSingboxServiceTests
             }
         }
     }
+
+    [Test]
+    public async Task GenerateClientConfigContent_Singbox114_CheckConfigValidation()
+    {
+        var config = CoreConfigTestFactory.CreateConfig(ECoreType.sing_box);
+        CoreConfigTestFactory.BindAppManagerConfig(config);
+
+        var node = new ProfileItem
+        {
+            ConfigType = EConfigType.Naive,
+            Address = "oracle.example.com",
+            Port = 2443,
+            Username = "user",
+            Password = "password",
+        };
+        var context = CoreConfigTestFactory.CreateContext(config, node, ECoreType.sing_box);
+
+        var result = new CoreConfigSingboxService(context).GenerateClientConfigContent();
+        await result.Success.Should().BeTrue();
+
+        var cfgStr = result.Data!.ToString();
+        var tempFile = Path.Combine(Path.GetTempPath(), $"singbox_test_{Guid.NewGuid():N}.json");
+        await File.WriteAllTextAsync(tempFile, cfgStr);
+
+        try
+        {
+            const string singboxBin = "/tmp/sing-box-1.14.0-linux-amd64/sing-box";
+            if (File.Exists(singboxBin))
+            {
+                using var proc = new System.Diagnostics.Process();
+                proc.StartInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = singboxBin,
+                    Arguments = $"check -c \"{tempFile}\"",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false
+                };
+                proc.Start();
+                var stderr = await proc.StandardError.ReadToEndAsync();
+                await proc.WaitForExitAsync();
+                Console.WriteLine($"singbox stderr: {stderr}");
+                await stderr.Should().BeEmpty();
+                await proc.ExitCode.Should().BeEqualTo(0);
+            }
+        }
+        finally
+        {
+            if (File.Exists(tempFile))
+            {
+                File.Delete(tempFile);
+            }
+        }
+    }
 }

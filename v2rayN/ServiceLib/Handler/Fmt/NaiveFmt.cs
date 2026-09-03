@@ -18,6 +18,7 @@ public class NaiveFmt : BaseFmt
             Remarks = parsedUrl.GetComponents(UriComponents.Fragment, UriFormat.Unescaped),
             Address = parsedUrl.IdnHost,
             Port = parsedUrl.Port,
+            StreamSecurity = Global.StreamSecurity,
         };
         var protocolExtra = item.GetProtocolExtra();
         if (parsedUrl.Scheme.Contains("quic"))

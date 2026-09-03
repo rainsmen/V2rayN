@@ -406,7 +406,8 @@ public partial class CoreConfigSingboxService
     {
         try
         {
-            if (_node.StreamSecurity is not (Global.StreamSecurityReality or Global.StreamSecurity))
+            var isNaive = _node.ConfigType == EConfigType.Naive;
+            if (!isNaive && _node.StreamSecurity is not (Global.StreamSecurityReality or Global.StreamSecurity))
             {
                 return;
             }
@@ -431,6 +432,10 @@ public partial class CoreConfigSingboxService
                     _ => null,
                 };
                 serverName = Utils.String2List(host)?.First();
+            }
+            if (serverName.IsNullOrEmpty() && isNaive)
+            {
+                serverName = _node.Address;
             }
             var tls = new Tls4Sbox()
             {

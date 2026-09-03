@@ -163,7 +163,12 @@ public partial class CoreConfigSingboxService
         _coreConfig.dns ??= new Dns4Sbox();
         _coreConfig.dns.rules ??= [];
 
-        _coreConfig.dns.rules.Add(new() { ip_accept_any = true, server = Global.SingboxHostsDNSTag });
+        _coreConfig.dns.rules.Add(new()
+        {
+            server = Global.SingboxHostsDNSTag,
+            action = "route",
+            preferred_by = [Global.SingboxHostsDNSTag]
+        });
 
         if (_config.RoutingBasicItem.EnableAdBlock)
         {
