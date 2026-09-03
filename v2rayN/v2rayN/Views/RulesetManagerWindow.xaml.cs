@@ -6,6 +6,8 @@ public partial class RulesetManagerWindow
     {
         InitializeComponent();
 
+        btnCancel.Click += (s, e) => Close();
+
         this.WhenActivated(disposables =>
         {
             this.OneWayBind(ViewModel, vm => vm.RulesetItems, v => v.lstRulesets.ItemsSource).DisposeWith(disposables);

@@ -6,6 +6,9 @@ on:
       release_tag:
         required: true
         type: string
+  push:
+    tags:
+      - 'v*'
 
 permissions:
   contents: write
@@ -20,19 +23,19 @@ jobs:
             rid: win-x64
             project: ./v2rayN/v2rayN.csproj
             os: windows-latest
-            ext: zip
+            out_name: v2rayN-windows-64.zip
             extra-opts: '-p:EnableWindowsTargeting=true'
           - target: linux
             rid: linux-x64
             project: ./v2rayN.Desktop/v2rayN.Desktop.csproj
             os: ubuntu-24.04
-            ext: tar.gz
+            out_name: v2rayN-linux-64.zip
             extra-opts: ''
           - target: osx
             rid: osx-x64
             project: ./v2rayN.Desktop/v2rayN.Desktop.csproj
             os: macos-latest
-            ext: tar.gz
+            out_name: v2rayN-macos-64.zip
             extra-opts: ''
     runs-on: ${{ matrix.os }}
     steps:
@@ -67,28 +70,51 @@ jobs:
       working-directory: ./v2rayN
       run: dotnet publish ./AmazTool/AmazTool.csproj -c Release -r ${{ matrix.rid }} -p:SelfContained=true -p:PublishTrimmed=true ${{ matrix.extra-opts }} -o release
 
+    - name: Embed sing-box Core & Geo Assets
+      shell: bash
+      working-directory: ./v2rayN
+      run: |
+        SING_VER="1.11.4"
+        mkdir -p release/bin/sing_box release/bin/srss
+        if [ "${{ matrix.target }}" = "windows" ]; then
+          curl -sL "https://github.com/SagerNet/sing-box/releases/download/v${SING_VER}/sing-box-${SING_VER}-windows-amd64.zip" -o sing-box.zip
+          7z e sing-box.zip "sing-box-*/sing-box.exe" -orelease/bin/sing_box/ -y
+          rm -f sing-box.zip
+        elif [ "${{ matrix.target }}" = "linux" ]; then
+          curl -sL "https://github.com/SagerNet/sing-box/releases/download/v${SING_VER}/sing-box-${SING_VER}-linux-amd64.tar.gz" -o sing-box.tar.gz
+          tar -xzf sing-box.tar.gz --strip-components=1 -C release/bin/sing_box/ "sing-box-${SING_VER}-linux-amd64/sing-box"
+          chmod +x release/bin/sing_box/sing-box
+          rm -f sing-box.tar.gz
+        elif [ "${{ matrix.target }}" = "osx" ]; then
+          curl -sL "https://github.com/SagerNet/sing-box/releases/download/v${SING_VER}/sing-box-${SING_VER}-darwin-amd64.tar.gz" -o sing-box.tar.gz
+          tar -xzf sing-box.tar.gz --strip-components=1 -C release/bin/sing_box/ "sing-box-${SING_VER}-darwin-amd64/sing-box"
+          chmod +x release/bin/sing_box/sing-box
+          rm -f sing-box.tar.gz
+        fi
+
+        curl -sL "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/geoip.dat" -o release/bin/geoip.dat || true
+        curl -sL "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/geosite.dat" -o release/bin/geosite.dat || true
+        for r in geosite-category-ads-all geosite-category-ads geosite-adblock geosite-cn geosite-geolocation-cn geoip-cn geoip-private; do
+          curl -sL "https://raw.githubusercontent.com/2dust/sing-box-rules/rule-set-geosite/${r}.srs" -o "release/bin/srss/${r}.srs" 2>/dev/null || true
+        done
+
     - name: Remove debug symbols
       shell: bash
       working-directory: ./v2rayN
       run: |
-        find release -type f -name '*.pdb' -delete || true
+        find release -type f -name '*.pdb' -delete 2>/dev/null || true
 
     - name: Package
       shell: bash
       working-directory: ./v2rayN
       run: |
-        if [ "${{ matrix.target }}" = "windows" ]; then
-          cd release && 7z a -tZip ../v2rayN-${{ matrix.target }}-x64.zip . && cd ..
-        else
-          tar -czf v2rayN-${{ matrix.target }}-x64.tar.gz -C release .
-        fi
+        cd release && 7z a -tZip ../${{ matrix.out_name }} . && cd ..
 
     - name: Upload to Release
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: ${{ inputs.release_tag }}
+        tag_name: ${{ inputs.release_tag || github.ref_name }}
         files: |
-          v2rayN/v2rayN-${{ matrix.target }}-x64.tar.gz
-          v2rayN/v2rayN-${{ matrix.target }}-x64.zip
+          v2rayN/${{ matrix.out_name }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

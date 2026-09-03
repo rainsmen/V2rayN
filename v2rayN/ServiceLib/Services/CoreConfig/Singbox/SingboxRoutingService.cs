@@ -391,6 +391,79 @@ public partial class CoreConfigSingboxService
             {
                 rule.inbound = item.InboundTag;
             }
+
+            if (item.LogicType.IsNotEmpty())
+            {
+                var subRules = new List<Rule4Sbox>();
+                if (item.Domain?.Count > 0)
+                {
+                    var dRule = new Rule4Sbox();
+                    var dCount = 0;
+                    foreach (var it in item.Domain)
+                    {
+                        if (ParseV2Domain(it, dRule))
+                        {
+                            dCount++;
+                        }
+                    }
+                    if (dCount > 0)
+                    {
+                        subRules.Add(dRule);
+                    }
+                }
+                if (item.Ip?.Count > 0)
+                {
+                    var ipRule = new Rule4Sbox();
+                    var ipCount = 0;
+                    foreach (var it in item.Ip)
+                    {
+                        if (ParseV2Address(it, ipRule))
+                        {
+                            ipCount++;
+                        }
+                    }
+                    if (ipCount > 0)
+                    {
+                        subRules.Add(ipRule);
+                    }
+                }
+                if (rule.source_ip_cidr?.Count > 0)
+                {
+                    subRules.Add(new Rule4Sbox { source_ip_cidr = rule.source_ip_cidr });
+                }
+                if (rule.port != null || rule.port_range != null)
+                {
+                    subRules.Add(new Rule4Sbox { port = rule.port, port_range = rule.port_range });
+                }
+                if (rule.network?.Count > 0)
+                {
+                    subRules.Add(new Rule4Sbox { network = rule.network });
+                }
+                if (rule.protocol?.Count > 0)
+                {
+                    subRules.Add(new Rule4Sbox { protocol = rule.protocol });
+                }
+                if (rule.inbound?.Count > 0)
+                {
+                    subRules.Add(new Rule4Sbox { inbound = rule.inbound });
+                }
+
+                if (subRules.Count > 0)
+                {
+                    var logicalRule = new Rule4Sbox
+                    {
+                        type = "logical",
+                        mode = item.LogicType.ToLowerInvariant(),
+                        rules = subRules,
+                        action = rule.action,
+                        outbound = rule.outbound,
+                        invert = item.Invert == true ? true : null
+                    };
+                    rules.Add(logicalRule);
+                    return;
+                }
+            }
+
             var rule1 = JsonUtils.DeepCopy(rule);
             var rule2 = JsonUtils.DeepCopy(rule);
             var rule3 = JsonUtils.DeepCopy(rule);

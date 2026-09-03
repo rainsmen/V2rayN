@@ -56,6 +56,18 @@ public partial class CoreConfigSingboxService
                 AddRuleSets(ruleSets, item2.rule_set);
             }
         }
+        //convert route rule_set to ruleset
+        foreach (var rule in _coreConfig.route.rules.Where(t => t.rule_set?.Count > 0).ToList() ?? [])
+        {
+            AddRuleSets(ruleSets, rule.rule_set);
+        }
+        foreach (var item in _coreConfig.route.rules.Where(t => t.rules?.Count > 0).Select(t => t.rules).ToList() ?? [])
+        {
+            foreach (var item2 in item ?? [])
+            {
+                AddRuleSets(ruleSets, item2.rule_set);
+            }
+        }
 
         //load custom ruleset file
         List<Ruleset4Sbox> customRulesets = [];
@@ -91,9 +103,19 @@ public partial class CoreConfigSingboxService
 
         //Add ruleset srs
         _coreConfig.route.rule_set = [];
+        var addedTags = new HashSet<string>();
+
+        foreach (var crs in customRulesets)
+        {
+            if (crs.tag.IsNotEmpty() && addedTags.Add(crs.tag))
+            {
+                _coreConfig.route.rule_set.Add(crs);
+            }
+        }
+
         foreach (var item in new HashSet<string>(ruleSets))
         {
-            if (item.IsNullOrEmpty())
+            if (item.IsNullOrEmpty() || addedTags.Contains(item))
             { continue; }
             var customRuleset = customRulesets.FirstOrDefault(t => t.tag != null && t.tag.Equals(item));
             if (customRuleset is null)
@@ -126,6 +148,7 @@ public partial class CoreConfigSingboxService
                 }
             }
             _coreConfig.route.rule_set.Add(customRuleset);
+            addedTags.Add(item);
         }
     }
 }

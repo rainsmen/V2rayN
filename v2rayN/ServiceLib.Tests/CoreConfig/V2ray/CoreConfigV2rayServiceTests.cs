@@ -669,4 +669,50 @@ public class CoreConfigV2rayServiceTests
         await proxyOutbound!.protocol.Should().BeEqualTo("shadowsocks");
         await proxyOutbound.settings.servers.Should().NotBeNull();
     }
+
+    [Test]
+    public async Task GenerateClientConfigContent_ActionTypeSniff_ShouldBeIgnoredInV2ray()
+    {
+        var config = CoreConfigTestFactory.CreateConfig(ECoreType.Xray);
+        CoreConfigTestFactory.BindAppManagerConfig(config);
+
+        var node = CoreConfigTestFactory.CreateVmessNode(ECoreType.Xray);
+        var routingItem = new RoutingItem
+        {
+            Id = "test-route",
+            RuleSet = JsonUtils.Serialize(new List<RulesItem>
+            {
+                new()
+                {
+                    Enabled = true,
+                    RuleType = ERuleType.Routing,
+                    ActionType = "sniff",
+                    OutboundTag = "direct",
+                    Domain = ["geosite:google"]
+                },
+                new()
+                {
+                    Enabled = true,
+                    RuleType = ERuleType.Routing,
+                    SourceIp = ["192.168.1.100/32"],
+                    OutboundTag = "direct"
+                }
+            })
+        };
+        var context = CoreConfigTestFactory.CreateContext(config, node, ECoreType.Xray) with
+        {
+            RoutingItem = routingItem
+        };
+
+        var result = new CoreConfigV2rayService(context).GenerateClientConfigContent();
+        await result.Success.Should().BeTrue();
+
+        var cfg = JsonUtils.Deserialize<V2rayConfig>(result.Data!.ToString());
+        await cfg.Should().NotBeNull();
+        // sniff 规则被跳过，不应出现 outboundTag 为 proxy 且 domain 包含 google 的规则
+        var hasSniffRule = cfg!.routing.rules.Any(r => r.outboundTag == Global.ProxyTag && r.domain != null && r.domain.Contains("geosite:google"));
+        await hasSniffRule.Should().BeFalse();
+        // SourceIp 规则应映射为 source
+        await cfg.routing.rules.Should().Contain(r => r.source != null && r.source.Contains("192.168.1.100/32"));
+    }
 }

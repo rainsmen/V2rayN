@@ -215,6 +215,11 @@ public static class ConfigHandler
 
     private static void MigrateCoreTypes(Config config)
     {
+        if (config.ConfigVersion >= 1)
+        {
+            return;
+        }
+
         var migrated = false;
 
         if (config.CoreTypeItem != null)
@@ -238,10 +243,16 @@ public static class ConfigHandler
                 if (!File.Exists(backupPath))
                 {
                     File.Copy(dbPath, backupPath, true);
+                    var walPath = $"{dbPath}-wal";
+                    if (File.Exists(walPath))
+                    {
+                        File.Copy(walPath, $"{backupPath}-wal", true);
+                    }
                 }
 
                 var db = SQLiteHelper.Instance;
                 db.Execute($"UPDATE ProfileItem SET CoreType = {(int)ECoreType.sing_box} WHERE CoreType IN ({string.Join(",", _removedCoreTypeValues)})");
+                migrated = true;
             }
         }
         catch (Exception ex)
@@ -249,9 +260,17 @@ public static class ConfigHandler
             Logging.SaveLog(_tag, ex);
         }
 
+        config.ConfigVersion = 1;
         if (migrated)
         {
-            _ = SaveConfig(config);
+            try
+            {
+                SaveConfig(config).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                Logging.SaveLog(_tag, ex);
+            }
         }
     }
 

@@ -33,9 +33,9 @@ This fork applies three major improvements over the upstream v2rayN:
 - **Advanced rule fields** in the routing rule editor:
   - `source_ip` / `source_ip_cidr` matching
   - `actionType` (route / reject / sniff / resolve / hijack-dns) — overrides outboundTag
-  - `logicType` (and / or) for logical rules
+  - `logicType` (and / or) for sing-box logical rules
   - `invert` flag for rule negation
-- Xray compatibility: ActionType downgrades to outboundTag mapping automatically
+- **Xray compatibility**: `reject` maps to `block`, `source_ip` maps to `source`, and sing-box specific actions (`sniff`/`resolve`/`hijack-dns`) are safely ignored without unintended proxying
 
 ### 3. Removed Promotion / 移除推广
 

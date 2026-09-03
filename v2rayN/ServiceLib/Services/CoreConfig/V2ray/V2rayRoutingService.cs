@@ -62,15 +62,21 @@ public partial class CoreConfigV2rayService
                         // Downgrade sing-box ActionType to Xray outboundTag mapping
                         if (item.ActionType.IsNotEmpty())
                         {
-                            item.OutboundTag = item.ActionType switch
+                            if (item.ActionType is "sniff" or "resolve" or "hijack-dns")
                             {
-                                "reject" => Global.BlockTag,
-                                "sniff" or "resolve" or "hijack-dns" => null, // Xray ignores these actions
-                                _ => item.OutboundTag
-                            };
+                                continue; // Xray does not support these actions, ignore rule
+                            }
+                            else if (item.ActionType == "reject")
+                            {
+                                item.OutboundTag = Global.BlockTag;
+                            }
                         }
 
                         var item2 = JsonUtils.Deserialize<RulesItem4Ray>(JsonUtils.Serialize(item));
+                        if (item.SourceIp?.Count > 0)
+                        {
+                            item2.source = item.SourceIp;
+                        }
                         GenRoutingUserRule(item2);
                     }
                 }
@@ -131,6 +137,10 @@ public partial class CoreConfigV2rayService
             {
                 userRule.process = null;
             }
+            if (userRule.source?.Count == 0)
+            {
+                userRule.source = null;
+            }
 
             var hasDomainIp = false;
             if (userRule.domain?.Count > 0)
@@ -138,6 +148,7 @@ public partial class CoreConfigV2rayService
                 var it = JsonUtils.DeepCopy(userRule);
                 it.ip = null;
                 it.process = null;
+                it.source = null;
                 it.type = "field";
                 for (var k = it.domain.Count - 1; k >= 0; k--)
                 {
@@ -155,6 +166,7 @@ public partial class CoreConfigV2rayService
                 var it = JsonUtils.DeepCopy(userRule);
                 it.domain = null;
                 it.process = null;
+                it.source = null;
                 it.type = "field";
                 _coreConfig.routing.rules.Add(it);
                 hasDomainIp = true;
@@ -164,6 +176,17 @@ public partial class CoreConfigV2rayService
                 var it = JsonUtils.DeepCopy(userRule);
                 it.domain = null;
                 it.ip = null;
+                it.source = null;
+                it.type = "field";
+                _coreConfig.routing.rules.Add(it);
+                hasDomainIp = true;
+            }
+            if (userRule.source?.Count > 0)
+            {
+                var it = JsonUtils.DeepCopy(userRule);
+                it.domain = null;
+                it.ip = null;
+                it.process = null;
                 it.type = "field";
                 _coreConfig.routing.rules.Add(it);
                 hasDomainIp = true;

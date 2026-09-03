@@ -7,6 +7,7 @@ public class Config
 
     public string IndexId { get; set; }
     public string SubIndexId { get; set; }
+    public int ConfigVersion { get; set; } = 0;
 
     #endregion property
 

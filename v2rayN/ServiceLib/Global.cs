@@ -354,8 +354,11 @@ public class Global
 
     public static readonly List<string> CoreTypes =
     [
+        "sing_box",
         "Xray",
-        "sing_box"
+        "brook",
+        "overtls",
+        "mieru"
     ];
 
     public static readonly HashSet<EConfigType> XraySupportConfigType =
@@ -660,7 +663,7 @@ public class Global
         { ECoreType.brook, "txthinking/brook" },
         { ECoreType.overtls, "ShadowsocksR-Live/overtls" },
         { ECoreType.mieru, "enfein/mieru" },
-        { ECoreType.v2rayN, "2dust/v2rayN" },
+        { ECoreType.v2rayN, "rainsmen/V2rayN" },
     };
 
     public static readonly List<string> OtherGeoUrls =

@@ -735,4 +735,62 @@ public class CoreConfigSingboxServiceTests
         await proxyOutbound.method.Should().BeEqualTo("aes-128-gcm");
         await proxyOutbound.password.Should().BeEqualTo("custom_password");
     }
+
+    [Test]
+    public async Task GenerateClientConfigContent_AdBlockEnabled_ShouldInjectRejectRules()
+    {
+        var config = CoreConfigTestFactory.CreateConfig(ECoreType.sing_box);
+        config.RoutingBasicItem.EnableAdBlock = true;
+        CoreConfigTestFactory.BindAppManagerConfig(config);
+
+        var node = CoreConfigTestFactory.CreateSocksNode(ECoreType.sing_box);
+        var context = CoreConfigTestFactory.CreateContext(config, node, ECoreType.sing_box);
+
+        var result = new CoreConfigSingboxService(context).GenerateClientConfigContent();
+        await result.Success.Should().BeTrue();
+
+        var cfg = JsonUtils.Deserialize<SingboxConfig>(result.Data!.ToString());
+        await cfg.Should().NotBeNull();
+        await cfg!.route.rules.Should().Contain(r => r.action == "reject" && r.rule_set != null && r.rule_set.Contains("geosite-category-ads-all"));
+        await cfg.dns.rules.Should().Contain(d => d.rcode == "NXDOMAIN" && d.rule_set != null && d.rule_set.Contains("geosite-category-ads-all"));
+    }
+
+    [Test]
+    public async Task GenerateClientConfigContent_LogicRule_ShouldGenerateLogicalRule()
+    {
+        var config = CoreConfigTestFactory.CreateConfig(ECoreType.sing_box);
+        CoreConfigTestFactory.BindAppManagerConfig(config);
+
+        var node = CoreConfigTestFactory.CreateSocksNode(ECoreType.sing_box);
+        var routingItem = new RoutingItem
+        {
+            Id = "test-route",
+            RuleSet = JsonUtils.Serialize(new List<RulesItem>
+            {
+                new()
+                {
+                    Enabled = true,
+                    RuleType = ERuleType.Routing,
+                    LogicType = "and",
+                    OutboundTag = "proxy",
+                    Domain = ["geosite:google"],
+                    Ip = ["8.8.8.8"]
+                }
+            })
+        };
+        var context = CoreConfigTestFactory.CreateContext(config, node, ECoreType.sing_box) with
+        {
+            RoutingItem = routingItem
+        };
+
+        var result = new CoreConfigSingboxService(context).GenerateClientConfigContent();
+        await result.Success.Should().BeTrue();
+
+        var cfg = JsonUtils.Deserialize<SingboxConfig>(result.Data!.ToString());
+        await cfg.Should().NotBeNull();
+        var logicalRule = cfg!.route.rules.FirstOrDefault(r => r.type == "logical" && r.mode == "and");
+        await logicalRule.Should().NotBeNull();
+        await logicalRule!.rules.Should().NotBeNull();
+        await logicalRule.rules!.Count.Should().BeGreaterThanOrEqualTo(2);
+    }
 }

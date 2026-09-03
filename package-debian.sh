@@ -9,7 +9,7 @@ BUILD_FROM=""
 XRAY_VER="${XRAY_VER:-}"
 SING_VER="${SING_VER:-}"
 
-MIN_KERNEL="6.12"
+MIN_KERNEL="5.10"
 PKGROOT="v2rayN-publish"
 PROJECT_HINT="v2rayN.Desktop/v2rayN.Desktop.csproj"
 OUTPUT_DIR="${HOME}/debbuild"
@@ -87,8 +87,11 @@ This script only supports: Debian."
   current_kernel="$(uname -r)"
   lowest="$(printf '%s\n%s\n' "$MIN_KERNEL" "$current_kernel" | sort -V | head -n1)"
 
-  [[ "$lowest" == "$MIN_KERNEL" ]] || die "Kernel $current_kernel is below $MIN_KERNEL"
-  echo "[OK] Kernel $current_kernel verified."
+  if [[ "$lowest" != "$MIN_KERNEL" ]]; then
+    echo "[WARN] Kernel $current_kernel is below $MIN_KERNEL, proceeding anyway."
+  else
+    echo "[OK] Kernel $current_kernel verified."
+  fi
 }
 
 install_dependencies() {
@@ -379,8 +382,8 @@ unify_geo_layout() {
   mkdir -p "$outroot/bin"
 
   for n in "${names[@]}"; do
-    if [[ -f "$outroot/bin/xray/$n" ]]; then
-      mv -f "$outroot/bin/xray/$n" "$outroot/bin/$n"
+    if [[ -f "$outroot/bin/Xray/$n" ]]; then
+      mv -f "$outroot/bin/Xray/$n" "$outroot/bin/$n"
     fi
   done
 }
@@ -455,10 +458,10 @@ populate_assets_netcore_mode() {
   local outroot="$1"
   local rid="$2"
 
-  mkdir -p "$outroot/bin/xray" "$outroot/bin/sing_box"
+  mkdir -p "$outroot/bin/Xray" "$outroot/bin/sing_box"
 
   if [[ "$WITH_CORE" == "xray" || "$WITH_CORE" == "both" ]]; then
-    download_xray "$outroot/bin/xray" "$rid" || echo "[!] xray download failed (skipped)"
+    download_xray "$outroot/bin/Xray" "$rid" || echo "[!] xray download failed (skipped)"
   fi
 
   if [[ "$WITH_CORE" == "sing-box" || "$WITH_CORE" == "both" ]]; then
@@ -472,7 +475,7 @@ stage_runtime_assets() {
   local outroot="$1"
   local rid="$2"
 
-  mkdir -p "$outroot/bin/xray" "$outroot/bin/sing_box"
+  mkdir -p "$outroot/bin/Xray" "$outroot/bin/sing_box"
 
   if [[ "$FORCE_NETCORE" -eq 0 ]]; then
     if populate_assets_zip_mode "$outroot" "$rid"; then
