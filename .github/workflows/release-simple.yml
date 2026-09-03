@@ -105,7 +105,14 @@ jobs:
         done
 
         # Clean up any zero or tiny corrupted error pages (< 32 bytes)
-        find release/bin/srss -type f -size -32c -delete 2>/dev/null || true
+        for f in release/bin/srss/*; do
+          if [ -f "$f" ]; then
+            fsize=$(wc -c < "$f" 2>/dev/null || echo 0)
+            if [ "$fsize" -lt 32 ]; then
+              rm -f "$f"
+            fi
+          fi
+        done
 
     - name: Remove debug symbols
       shell: bash
