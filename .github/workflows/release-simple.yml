@@ -82,11 +82,15 @@ jobs:
         if [ "${{ matrix.target }}" = "windows" ]; then
           curl -sL "https://github.com/SagerNet/sing-box/releases/download/v${SING_VER}/sing-box-${SING_VER}-windows-amd64.zip" -o sing-box.zip
           7z e sing-box.zip "sing-box-*/sing-box.exe" -orelease/bin/sing_box/ -y
+          7z e sing-box.zip "sing-box-*/libcronet.dll" -orelease/bin/sing_box/ -y || true
+          CRONET=$(7z l sing-box.zip | grep -io 'libcronet[^ ]*\.dll' | head -n1 || true)
+          if [ -z "$CRONET" ]; then echo "WARNING: libcronet.dll not in sing-box windows archive"; ls -l release/bin/sing_box/ || true; fi
           rm -f sing-box.zip
         elif [ "${{ matrix.target }}" = "linux" ]; then
           curl -sL "https://github.com/SagerNet/sing-box/releases/download/v${SING_VER}/sing-box-${SING_VER}-linux-amd64.tar.gz" -o sing-box.tar.gz
           tar -xzf sing-box.tar.gz -C release/bin/sing_box/
           mv release/bin/sing_box/sing-box-*/sing-box release/bin/sing_box/sing-box || true
+          find release/bin/sing_box -name 'libcronet*' -exec mv {} release/bin/sing_box/libcronet.so \; || true
           rm -rf release/bin/sing_box/sing-box-*
           chmod +x release/bin/sing_box/sing-box
           rm -f sing-box.tar.gz
