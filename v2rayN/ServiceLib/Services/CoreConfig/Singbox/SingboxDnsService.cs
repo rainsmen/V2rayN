@@ -58,11 +58,13 @@ public partial class CoreConfigSingboxService
         var simpleDnsItem = context.SimpleDnsItem;
         var finalDns = GenBootstrapDns();
 
-        var directDns = ParseDnsAddress(simpleDnsItem.DirectDNS ?? Global.DomainDirectDNSAddress.First());
+        var directDns = ParseDnsAddress(simpleDnsItem.DirectDNS ?? Global.DomainDirectDNSAddress.First())
+            ?? ParseDnsAddress(Global.DomainDirectDNSAddress.First())!;
         directDns.tag = Global.SingboxDirectDNSTag;
         directDns.domain_resolver = Global.SingboxLocalDNSTag;
 
-        var remoteDns = ParseDnsAddress(simpleDnsItem.RemoteDNS ?? Global.DomainRemoteDNSAddress.First());
+        var remoteDns = ParseDnsAddress(simpleDnsItem.RemoteDNS ?? Global.DomainRemoteDNSAddress.First())
+            ?? ParseDnsAddress(Global.DomainRemoteDNSAddress.First())!;
         remoteDns.tag = Global.SingboxRemoteDNSTag;
         remoteDns.detour = Global.ProxyTag;
         remoteDns.domain_resolver = Global.SingboxLocalDNSTag;
@@ -149,7 +151,8 @@ public partial class CoreConfigSingboxService
 
     private Server4Sbox GenBootstrapDns()
     {
-        var finalDns = ParseDnsAddress(context.SimpleDnsItem?.BootstrapDNS ?? Global.DomainPureIPDNSAddress.First());
+        var finalDns = ParseDnsAddress(context.SimpleDnsItem?.BootstrapDNS ?? Global.DomainPureIPDNSAddress.First())
+            ?? ParseDnsAddress(Global.DomainPureIPDNSAddress.First())!;
         finalDns.tag = Global.SingboxLocalDNSTag;
         _coreConfig.dns ??= new Dns4Sbox();
         _coreConfig.dns.servers ??= [];
@@ -478,7 +481,8 @@ public partial class CoreConfigSingboxService
 
         var finalDnsAddress = string.IsNullOrEmpty(dnsItem?.DomainDNSAddress) ? Global.DomainPureIPDNSAddress.FirstOrDefault() : dnsItem?.DomainDNSAddress;
 
-        var localDnsServer = ParseDnsAddress(finalDnsAddress);
+        var localDnsServer = ParseDnsAddress(finalDnsAddress ?? Global.DomainPureIPDNSAddress.First())
+            ?? ParseDnsAddress(Global.DomainPureIPDNSAddress.First())!;
         localDnsServer.tag = tag;
 
         dns4Sbox.servers.Add(localDnsServer);
@@ -504,9 +508,13 @@ public partial class CoreConfigSingboxService
         };
     }
 
-    private static Server4Sbox? ParseDnsAddress(string address)
+    private static Server4Sbox? ParseDnsAddress(string? address)
     {
-        var addressFirst = address?.Split(address.Contains(',') ? ',' : ';').FirstOrDefault()?.Trim();
+        if (string.IsNullOrWhiteSpace(address))
+        {
+            return null;
+        }
+        var addressFirst = address.Split(address.Contains(',') ? ',' : ';').FirstOrDefault()?.Trim();
         if (string.IsNullOrEmpty(addressFirst))
         {
             return null;

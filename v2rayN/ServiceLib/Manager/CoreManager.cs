@@ -182,6 +182,11 @@ public class CoreManager
         var coreType = AppManager.Instance.GetCoreType(node, node.ConfigType);
         var coreInfo = CoreInfoManager.Instance.GetCoreInfo(coreType);
 
+        if (coreType == ECoreType.sing_box && node.ConfigType == EConfigType.Naive && !CronetHelper.IsCronetAvailable())
+        {
+            await UpdateFunc(false, CronetHelper.MissingCronetMessage());
+        }
+
         var displayLog = node.ConfigType != EConfigType.Custom || node.DisplayLog;
         var proc = await RunProcess(coreInfo, Global.CoreConfigFileName, displayLog, true, context.IsTunEnabled);
         if (proc is null)

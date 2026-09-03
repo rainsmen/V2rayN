@@ -51,17 +51,45 @@ public static class FileUtils
         }
     }
 
-    public static void DecompressTarFile(string fileName, string toPath)
+    public static bool DecompressTarFile(string fileName, string toPath)
     {
         try
         {
             using var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
             using var gz = new GZipStream(fs, CompressionMode.Decompress, leaveOpen: true);
-            TarFile.ExtractToDirectory(gz, toPath, overwriteFiles: true);
+            // Basic path-traversal guard: TarFile.ExtractToDirectory overwrites;
+            // ensure destination stays inside toPath by pre-scanning entry names.
+            using var reader = new TarReader(gz, leaveOpen: true);
+            var entries = new List<TarEntry>();
+            TarEntry? entry;
+            while ((entry = reader.GetNextEntry()) != null)
+            {
+                var name = entry.Name ?? string.Empty;
+                if (name.Contains("..") || Path.IsPathRooted(name))
+                {
+                    Logging.SaveLog(_tag, new InvalidDataException($"Unsafe tar entry blocked: {name}"));
+                    return false;
+                }
+                entries.Add(entry);
+            }
         }
         catch (Exception ex)
         {
             Logging.SaveLog(_tag, ex);
+            return false;
+        }
+
+        try
+        {
+            using var fs2 = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+            using var gz2 = new GZipStream(fs2, CompressionMode.Decompress, leaveOpen: true);
+            TarFile.ExtractToDirectory(gz2, toPath, overwriteFiles: true);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Logging.SaveLog(_tag, ex);
+            return false;
         }
     }
 
@@ -89,6 +117,8 @@ public static class FileUtils
     {
         try
         {
+            var destFull = Path.GetFullPath(toPath);
+            Directory.CreateDirectory(destFull);
             using var archive = ZipFile.OpenRead(fileName);
             foreach (var entry in archive.Entries)
             {
@@ -98,11 +128,27 @@ public static class FileUtils
                 }
                 try
                 {
+                    if (string.IsNullOrEmpty(entry.Name))
+                    {
+                        continue;
+                    }
                     if (ignoredName.IsNotEmpty() && entry.Name.Contains(ignoredName))
                     {
                         continue;
                     }
-                    entry.ExtractToFile(Path.Combine(toPath, entry.Name), true);
+                    // Prevent ZipSlip and flatten collisions being silent:
+                    // use only file name, but skip unsafe names.
+                    var safeName = Path.GetFileName(entry.Name);
+                    if (safeName.IsNullOrEmpty() || safeName.Contains(".."))
+                    {
+                        continue;
+                    }
+                    var dest = Path.GetFullPath(Path.Combine(destFull, safeName));
+                    if (!dest.StartsWith(destFull, StringComparison.Ordinal))
+                    {
+                        continue;
+                    }
+                    entry.ExtractToFile(dest, true);
                 }
                 catch (IOException ex)
                 {

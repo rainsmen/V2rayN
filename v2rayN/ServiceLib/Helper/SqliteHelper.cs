@@ -20,7 +20,57 @@ public sealed class SQLiteHelper
 
     public CreateTableResult CreateTable<T>()
     {
-        return _db.CreateTable<T>();
+        var result = _db.CreateTable<T>();
+        try
+        {
+            EnsureColumns<T>();
+        }
+        catch (Exception ex)
+        {
+            Logging.SaveLog("SQLiteHelper.EnsureColumns", ex);
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Best-effort ALTER TABLE ADD COLUMN for pre-existing databases
+    /// created before new ProfileItem/Config columns were added.
+    /// sqlite-net CreateTable does not migrate existing tables.
+    /// </summary>
+    private void EnsureColumns<T>()
+    {
+        var map = _db.GetMapping<T>();
+        List<SQLiteConnection.ColumnInfo> existing;
+        try
+        {
+            existing = _db.GetTableInfo(map.TableName);
+        }
+        catch
+        {
+            return;
+        }
+        var existingNames = new HashSet<string>(existing.Select(c => c.Name), StringComparer.OrdinalIgnoreCase);
+        foreach (var col in map.Columns)
+        {
+            if (existingNames.Contains(col.Name))
+            {
+                continue;
+            }
+            try
+            {
+                var decl = col.ColumnType?.Name switch
+                {
+                    "String" => "TEXT",
+                    "Int32" or "Int64" or "Boolean" => "INTEGER",
+                    _ => "TEXT",
+                };
+                _db.Execute($"ALTER TABLE \"{map.TableName}\" ADD COLUMN \"{col.Name}\" {decl}");
+            }
+            catch
+            {
+                // Column may exist under different casing or migration raced; ignore.
+            }
+        }
     }
 
     public async Task<int> InsertAllAsync(IEnumerable models)

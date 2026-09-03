@@ -23,13 +23,13 @@ This fork applies three major improvements over the upstream v2rayN:
 - **Default core changed to sing-box** for all protocols (VMess, VLESS, Trojan, Shadowsocks, Hysteria2, TUIC, Anytls, WireGuard, etc.)
 - Removed redundant cores: v2fly, v2fly_v5, mihomo (Clash), hysteria, hysteria2, tuic, naiveproxy, juicity, shadowquic — sing-box already supports these protocols natively
 - **Optional cores retained**: Xray (for kcp/xhttp transports), brook, overtls, mieru (protocols sing-box doesn't support)
-- Existing configs auto-migrate: old CoreType values convert to sing-box on first launch, with `guiNDB.db` backed up to `guiNDB.db.bak`
-- Smaller distribution: default `bin/` ships only sing-box (~40-100MB saved)
+- Existing configs auto-migrate: old CoreType values convert to sing-box on first launch, with `guiNDB.db` backed up to `guiNDB.db.bak` (+ timestamped `.yyyyMMddHHmmss.bak` on repeat runs; `-wal/-shm/-journal` copied together)
+- Distribution: `bin/` ships sing-box + Xray via `v2rayN-core-bin`; `brook/overtls/mieru` are on-demand and not auto-updated. Naive nodes now run on sing-box and require the `libcronet` companion lib (see Troubleshooting).
 
 ### 2. Ad-blocking & Advanced Routing / 去广告与高级路由
 
 - **Ad-block toggle** (off by default) — injects `reject` rules at route layer and `NXDOMAIN` at DNS layer
-- Three third-party ad-block ruleset sources: `category-ads-all`, `anti-AD`, `Loyalsoldier-reject`
+- Ad-block rulesets currently from `2dust/sing-box-rules` (`geosite-category-ads-all/ads/adblock`); `AdGuard/anti-AD/Loyalsoldier-reject` are planned, not yet wired to `SingboxRulesetSources`
 - **Advanced rule fields** in the routing rule editor:
   - `source_ip` / `source_ip_cidr` matching
   - `actionType` (route / reject / sniff / resolve / hijack-dns) — overrides outboundTag
@@ -54,9 +54,15 @@ One-click import of preset routing rule bundles from the Routing Setting window:
 
 ### 5. Ruleset Manager / 规则集管理器
 
-Visual editor for sing-box custom rule sets (`CustomRulesetPath4Singbox`):
+Per-routing-item editor for sing-box custom rule sets (`CustomRulesetPath4Singbox`):
 - Add / remove / edit `Ruleset4Sbox` entries (tag, type, format, url, path, download_detour)
-- Changes saved to JSON file and persisted to the routing item
+- Changes saved to JSON file and persisted to the routing item (global `SingboxRulesetSources` management + `.srs` version display are planned)
+
+## Troubleshooting / 排障
+
+- `cronet: library not found` (Naive node): ensure `bin/sing_box/libcronet.dll` (Windows) / `libcronet.so` (Linux) sits next to `sing-box`. Re-download the matching official sing-box archive or use Check Update; the app now warns pre-launch via `NodeValidator`/`CoreManager`.
+- Shadowsocks `chacha20-ietf-poly1305` rejected on Xray: fixed to validate per-core (`SsSecuritiesInXray` vs `SsSecuritiesInSingbox`).
+- Plain-`http://` subscriptions are rejected unless loopback (use `https://` or local subconverter).
 
 ---
 

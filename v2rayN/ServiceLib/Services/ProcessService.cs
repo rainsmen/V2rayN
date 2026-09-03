@@ -6,9 +6,29 @@ public class ProcessService : IDisposable
     private readonly Func<bool, string, Task>? _updateFunc;
     private bool _isDisposed;
 
-    public int Id => _process.Id;
-    public IntPtr Handle => _process.Handle;
-    public bool HasExited => _process.HasExited;
+    public int Id
+    {
+        get
+        {
+            try { return _process.Id; } catch { return -1; }
+        }
+    }
+
+    public IntPtr Handle
+    {
+        get
+        {
+            try { return _process.Handle; } catch { return IntPtr.Zero; }
+        }
+    }
+
+    public bool HasExited
+    {
+        get
+        {
+            try { return _process.HasExited; } catch (InvalidOperationException) { return true; } catch { return false; }
+        }
+    }
 
     public ProcessService(
         string fileName,
@@ -72,10 +92,14 @@ public class ProcessService : IDisposable
 
     public async Task StopAsync()
     {
-        if (_process.HasExited)
+        try
         {
-            return;
+            if (HasExited)
+            {
+                return;
+            }
         }
+        catch { return; }
 
         try
         {
@@ -104,15 +128,25 @@ public class ProcessService : IDisposable
 
             try
             {
-                _process.Kill();
+                if (!HasExited)
+                {
+                    _process.Kill();
+                }
             }
             catch { }
 
-            await Task.Delay(100);
+            try
+            {
+                await _process.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(3));
+            }
+            catch { await Task.Delay(100); }
         }
         catch (Exception ex)
         {
-            await _updateFunc?.Invoke(true, ex.Message);
+            if (_updateFunc != null)
+            {
+                await _updateFunc.Invoke(true, ex.Message);
+            }
         }
     }
 
@@ -151,7 +185,7 @@ public class ProcessService : IDisposable
 
         try
         {
-            if (!_process.HasExited)
+            if (!HasExited)
             {
                 try
                 {
@@ -164,14 +198,14 @@ public class ProcessService : IDisposable
                 }
                 catch { }
 
-                _process.Kill();
+                try { _process.Kill(); } catch { }
             }
 
             _process.Dispose();
         }
         catch (Exception ex)
         {
-            _updateFunc?.Invoke(true, ex.Message);
+            try { _updateFunc?.Invoke(true, ex.Message); } catch { }
         }
 
         _isDisposed = true;

@@ -89,14 +89,22 @@ public class DownloadService
         using var client = new HttpClient(webRequestHandler);
 
         var response = await client.GetAsync(url);
-        if (response.StatusCode == HttpStatusCode.Redirect && response.Headers.Location is not null)
+        if (response.Headers.Location is not null
+            && (response.StatusCode == HttpStatusCode.Redirect
+                || response.StatusCode == HttpStatusCode.MovedPermanently
+                || response.StatusCode == HttpStatusCode.RedirectKeepVerb
+                || response.StatusCode == HttpStatusCode.RedirectMethod
+                || (int)response.StatusCode == 308))
         {
-            return response.Headers.Location.ToString();
+            var location = response.Headers.Location.IsAbsoluteUri
+                ? response.Headers.Location.ToString()
+                : new Uri(new Uri(url), response.Headers.Location).ToString();
+            return location;
         }
         else
         {
             Error?.Invoke(this, new ErrorEventArgs(new Exception("StatusCode error: " + response.StatusCode)));
-            Logging.SaveLog("StatusCode error: " + url);
+            Logging.SaveLog("StatusCode error: " + Logging.SanitizeUrl(url));
             return null;
         }
     }

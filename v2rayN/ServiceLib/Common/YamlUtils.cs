@@ -29,7 +29,7 @@ public class YamlUtils
         catch (Exception ex)
         {
             Logging.SaveLog(_tag, ex);
-            return deserializer.Deserialize<T>("");
+            return default!;
         }
     }
 

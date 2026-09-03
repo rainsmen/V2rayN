@@ -354,34 +354,73 @@ public partial class CheckUpdateViewModel : MyReactiveObject
             var coreTypeStr = item.CoreType?.ToString() ?? "";
             var toPath = Utils.GetBinPath("", coreTypeStr);
 
+            var extractOk = true;
             if (fileName.Contains(".tar.gz"))
             {
-                FileUtils.DecompressTarFile(fileName, toPath);
-                var dir = new DirectoryInfo(toPath);
-                if (dir.Exists)
+                extractOk = FileUtils.DecompressTarFile(fileName, toPath);
+                if (extractOk)
                 {
-                    foreach (var subDir in dir.GetDirectories())
+                    var dir = new DirectoryInfo(toPath);
+                    if (dir.Exists)
                     {
-                        FileUtils.CopyDirectory(subDir.FullName, toPath, false, true);
-                        subDir.Delete(true);
+                        // Flatten nested release folders recursively (e.g. sing-box-1.x-linux-amd64/).
+                        foreach (var subDir in dir.GetDirectories())
+                        {
+                            try
+                            {
+                                FileUtils.CopyDirectory(subDir.FullName, toPath, false, true);
+                                subDir.Delete(true);
+                            }
+                            catch (Exception ex)
+                            {
+                                Logging.SaveLog(_tag, ex);
+                                extractOk = false;
+                            }
+                        }
                     }
                 }
             }
             else if (fileName.Contains(".gz"))
             {
-                FileUtils.DecompressFile(fileName, toPath, coreTypeStr);
+                try
+                {
+                    FileUtils.DecompressFile(fileName, toPath, coreTypeStr);
+                }
+                catch (Exception ex)
+                {
+                    Logging.SaveLog(_tag, ex);
+                    extractOk = false;
+                }
             }
             else
             {
-                FileUtils.ZipExtractToFile(fileName, toPath, "geo");
+                extractOk = FileUtils.ZipExtractToFile(fileName, toPath, "geo");
+            }
+
+            if (!extractOk)
+            {
+                await UpdateView(item.CoreType, ResUI.MsgUpdateV2rayCoreSuccessfully + " (extract failed, kept previous core)");
+                continue;
+            }
+
+            if (item.CoreType == ECoreType.sing_box && !CronetHelper.IsCronetAvailable())
+            {
+                await UpdateView(item.CoreType, CronetHelper.MissingCronetMessage());
             }
 
             if (Utils.IsNonWindows())
             {
-                var filesList = new DirectoryInfo(toPath).GetFiles().Select(u => u.FullName).ToList();
-                foreach (var file in filesList)
+                try
                 {
-                    await Utils.SetLinuxChmod(Path.Combine(toPath, coreTypeStr.ToLower()));
+                    var filesList = new DirectoryInfo(toPath).GetFiles().Select(u => u.FullName).ToList();
+                    foreach (var file in filesList)
+                    {
+                        await Utils.SetLinuxChmod(file);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logging.SaveLog(_tag, ex);
                 }
             }
 

@@ -221,6 +221,7 @@ public static class ConfigHandler
         }
 
         var migrated = false;
+        var dbOk = true;
 
         if (config.CoreTypeItem != null)
         {
@@ -243,21 +244,52 @@ public static class ConfigHandler
                 if (!File.Exists(backupPath))
                 {
                     File.Copy(dbPath, backupPath, true);
-                    var walPath = $"{dbPath}-wal";
-                    if (File.Exists(walPath))
+                    foreach (var suffix in new[] { "-wal", "-shm", "-journal" })
                     {
-                        File.Copy(walPath, $"{backupPath}-wal", true);
+                        var src = $"{dbPath}{suffix}";
+                        if (File.Exists(src))
+                        {
+                            try { File.Copy(src, $"{backupPath}{suffix}", true); } catch { }
+                        }
                     }
                 }
+                else
+                {
+                    // Keep a timestamped copy so repeated migrations/restores never lose the original.
+                    try
+                    {
+                        var stamped = $"{dbPath}.{DateTime.Now:yyyyMMddHHmmss}.bak";
+                        if (!File.Exists(stamped))
+                        {
+                            File.Copy(dbPath, stamped, false);
+                        }
+                    }
+                    catch { }
+                }
 
-                var db = SQLiteHelper.Instance;
-                db.Execute($"UPDATE ProfileItem SET CoreType = {(int)ECoreType.sing_box} WHERE CoreType IN ({string.Join(",", _removedCoreTypeValues)})");
-                migrated = true;
+                try
+                {
+                    var db = SQLiteHelper.Instance;
+                    db.Execute($"UPDATE ProfileItem SET CoreType = {(int)ECoreType.sing_box} WHERE CoreType IN ({string.Join(",", _removedCoreTypeValues)})");
+                    migrated = true;
+                }
+                catch (Exception ex)
+                {
+                    dbOk = false;
+                    Logging.SaveLog(_tag, ex);
+                }
             }
         }
         catch (Exception ex)
         {
+            dbOk = false;
             Logging.SaveLog(_tag, ex);
+        }
+
+        if (!dbOk)
+        {
+            // Do not bump version so a later launch retries the DB migration.
+            return;
         }
 
         config.ConfigVersion = 1;
@@ -265,7 +297,7 @@ public static class ConfigHandler
         {
             try
             {
-                SaveConfig(config).GetAwaiter().GetResult();
+                Task.Run(() => SaveConfig(config)).ConfigureAwait(false).GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {

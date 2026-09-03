@@ -99,10 +99,19 @@ public class NodeValidator
 
             case EConfigType.Shadowsocks:
                 v.Assert(!item.Password.IsNullOrEmpty(), string.Format(ResUI.MsgInvalidProperty, ResUI.TbId3));
+                var allowedMethods = coreType == ECoreType.Xray
+                    ? Global.SsSecuritiesInXray
+                    : Global.SsSecuritiesInSingbox;
                 v.Assert(
                     !string.IsNullOrEmpty(protocolExtra.SsMethod) &&
-                    Global.SsSecuritiesInSingbox.Contains(protocolExtra.SsMethod),
+                    allowedMethods.Contains(protocolExtra.SsMethod),
                     string.Format(ResUI.MsgInvalidProperty, ResUI.TbSecurity3));
+                break;
+            case EConfigType.Naive:
+                if (coreType == ECoreType.sing_box && !CronetHelper.IsCronetAvailable())
+                {
+                    v.Warning(CronetHelper.MissingCronetMessage());
+                }
                 break;
         }
 

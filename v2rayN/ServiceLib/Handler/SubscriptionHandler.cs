@@ -77,6 +77,23 @@ public static class SubscriptionHandler
             return false;
         }
 
+        // Plain http is only allowed for loopback (local subconverter); otherwise force https.
+        if (url.StartsWith(Global.HttpProtocol, StringComparison.OrdinalIgnoreCase))
+        {
+            try
+            {
+                var host = new Uri(url).Host;
+                if (host is not "127.0.0.1" and not "localhost" and not "::1")
+                {
+                    return false;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -208,7 +225,7 @@ public static class SubscriptionHandler
         if (ret <= 0)
         {
             Logging.SaveLog("FailedImportSubscription");
-            Logging.SaveLog(result);
+            Logging.SaveLog($"content-length={result?.Length ?? 0}");
         }
 
         // Update completion message

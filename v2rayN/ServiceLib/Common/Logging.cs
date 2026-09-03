@@ -26,6 +26,46 @@ public class Logging
         {
             LogManager.SuspendLogging();
         }
+        else if (!LogManager.IsLoggingEnabled())
+        {
+            LogManager.ResumeLogging();
+        }
+    }
+
+    /// <summary>
+    /// Remove userinfo/token/query credentials from a URL before logging.
+    /// </summary>
+    public static string SanitizeUrl(string? url)
+    {
+        if (string.IsNullOrEmpty(url))
+        {
+            return string.Empty;
+        }
+        try
+        {
+            // Strip userinfo (user:pass@) which may carry subscription tokens.
+            var at = url.IndexOf('@');
+            var scheme = url.IndexOf("://", StringComparison.Ordinal);
+            if (at > scheme && scheme >= 0)
+            {
+                url = url.Substring(0, scheme + 3) + url.Substring(at + 1);
+            }
+            // Do not log full query strings that may contain tokens.
+            var q = url.IndexOf('?');
+            if (q >= 0 && url.Length - q > 64)
+            {
+                url = url.Substring(0, q) + "?<redacted>";
+            }
+            else if (q >= 0 && (url.Contains("token", StringComparison.OrdinalIgnoreCase) || url.Contains("password", StringComparison.OrdinalIgnoreCase)))
+            {
+                url = url.Substring(0, q) + "?<redacted>";
+            }
+            return url;
+        }
+        catch
+        {
+            return "<unloggable-url>";
+        }
     }
 
     public static void SaveLog(string strContent)

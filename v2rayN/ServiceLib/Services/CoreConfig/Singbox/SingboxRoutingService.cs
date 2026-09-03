@@ -353,7 +353,12 @@ public partial class CoreConfigSingboxService
             var rules = _coreConfig.route.rules;
 
             var rule = new Rule4Sbox();
-            var hasActionType = item.ActionType.IsNotEmpty();
+            var hasActionType = item.ActionType.IsNotEmpty()
+                && Global.RuleActionTypes.Contains(item.ActionType ?? string.Empty);
+            if (item.ActionType.IsNotEmpty() && !hasActionType)
+            {
+                Logging.SaveLog($"Unsupported rule ActionType ignored: {item.ActionType}");
+            }
             if (hasActionType)
             {
                 rule.action = item.ActionType;
@@ -374,7 +379,11 @@ public partial class CoreConfigSingboxService
             if (item.Port.IsNotEmpty())
             {
                 var portRanges = item.Port.Split(',').Where(it => it.Contains('-')).Select(it => it.Replace("-", ":")).ToList();
-                var ports = item.Port.Split(',').Where(it => !it.Contains('-')).Select(it => it.ToInt()).ToList();
+                var ports = item.Port.Split(',')
+                    .Where(it => !it.Contains('-'))
+                    .Select(it => it.Trim().ToInt(-1))
+                    .Where(p => p is > 0 and <= 65535)
+                    .ToList();
 
                 rule.port_range = portRanges.Count > 0 ? portRanges : null;
                 rule.port = ports.Count > 0 ? ports : null;
@@ -387,7 +396,7 @@ public partial class CoreConfigSingboxService
             {
                 rule.protocol = item.Protocol;
             }
-            if (item.InboundTag?.Count >= 0)
+            if (item.InboundTag?.Count > 0)
             {
                 rule.inbound = item.InboundTag;
             }

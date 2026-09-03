@@ -51,7 +51,50 @@ jobs:
     
     - name: Get v2rayN-core-bin
       run: wget -nv -O v2rayN-$Target-$Arch.zip "https://github.com/2dust/v2rayN-core-bin/raw/refs/heads/master/v2rayN-$Target-$Arch.zip"
-    
+
+    - name: Ensure sing-box cronet companion lib
+      shell: bash
+      run: |
+        set -e
+        mkdir -p core-check
+        7z x -ocore-check v2rayN-$Target-$Arch.zip -y >/dev/null
+        SING_DIR=$(find core-check -type d -iname "sing_box" | head -n1)
+        if [ -z "$SING_DIR" ]; then
+          echo "sing_box dir not found in core package"
+          find core-check -maxdepth 4 -type f | head -20
+          exit 1
+        fi
+        echo "sing_box dir: $SING_DIR"
+        ls -l "$SING_DIR" || true
+        if ls "$SING_DIR"/libcronet* >/dev/null 2>&1; then
+          echo "libcronet already present"
+        else
+          echo "libcronet missing, downloading from official sing-box release"
+          SING_VER=$("$SING_DIR/sing-box" version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -n1 || true)
+          if [ -z "$SING_VER" ] && [ -x "$SING_DIR/sing-box.exe" ]; then
+            SING_VER=$("$SING_DIR/sing-box.exe" version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -n1 || true)
+          fi
+          echo "sing-box version: ${SING_VER:-unknown}"
+          if [ -n "$SING_VER" ]; then
+            if [ "${{ matrix.arch }}" = "arm64" ]; then SB_ARCH="arm64"; else SB_ARCH="amd64"; fi
+            if [ "$Target" = "windows" ]; then SB_OS="windows"; SB_EXT="zip"; LIB="libcronet.dll";
+            elif [ "$Target" = "linux" ]; then SB_OS="linux"; SB_EXT="tar.gz"; LIB="libcronet.so";
+            else SB_OS="darwin"; SB_EXT="tar.gz"; LIB="libcronet.dylib"; fi
+            wget -nv -O /tmp/sing-box-official.$SB_EXT "https://github.com/SagerNet/sing-box/releases/download/v${SING_VER}/sing-box-${SING_VER}-${SB_OS}-${SB_ARCH}.${SB_EXT}" || true
+            mkdir -p /tmp/sb-off
+            if [ "$SB_EXT" = "zip" ]; then 7z x -o/tmp/sb-off /tmp/sing-box-official.$SB_EXT -y >/dev/null || true;
+            else tar -xzf /tmp/sing-box-official.$SB_EXT -C /tmp/sb-off || true; fi
+            CRONET=$(find /tmp/sb-off -iname 'libcronet*' | head -n1 || true)
+            if [ -n "$CRONET" ]; then
+              cp -f "$CRONET" "$SING_DIR/$LIB"
+              echo "restored $LIB from official release"
+            else
+              echo "WARNING: could not restore $LIB"
+            fi
+          fi
+        fi
+        rm -rf core-check /tmp/sb-off /tmp/sing-box-official.*
+
     - name: Package zip archive
       run: 7z a -tZip v2rayN-$Target-$Arch.zip v2rayN-$Target-$Arch -mx1
 
