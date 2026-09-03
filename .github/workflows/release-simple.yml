@@ -74,7 +74,8 @@ jobs:
       shell: bash
       working-directory: ./v2rayN
       run: |
-        SING_VER=$(curl -fsSL https://api.github.com/repos/SagerNet/sing-box/releases/latest | grep -Eo '"tag_name":\s*"v[^"]+"' | sed -E 's/.*"v([^"]+)".*/\1/' | head -n1)
+        SING_TAG=$(curl -sI https://github.com/SagerNet/sing-box/releases/latest | grep -i "^location:" | sed -E 's/.*tag\/(v[0-9.]+).*/\1/' | tr -d '\r\n')
+        SING_VER="${SING_TAG#v}"
         SING_VER="${SING_VER:-1.14.0}"
         echo "Using sing-box version: ${SING_VER}"
         mkdir -p release/bin/sing_box release/bin/srss
@@ -109,14 +110,7 @@ jobs:
         done
 
         # Clean up any zero or tiny corrupted error pages (< 32 bytes)
-        for f in release/bin/srss/*; do
-          if [ -f "$f" ]; then
-            fsize=$(wc -c < "$f" 2>/dev/null || echo 0)
-            if [ "$fsize" -lt 32 ]; then
-              rm -f "$f"
-            fi
-          fi
-        done
+        python3 -c "import os, glob; [os.remove(f) for f in glob.glob('release/bin/srss/*') if os.path.isfile(f) and os.path.getsize(f) < 32]" 2>/dev/null || true
 
     - name: Remove debug symbols
       shell: bash
