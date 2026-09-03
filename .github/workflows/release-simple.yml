@@ -84,12 +84,16 @@ jobs:
           rm -f sing-box.zip
         elif [ "${{ matrix.target }}" = "linux" ]; then
           curl -sL "https://github.com/SagerNet/sing-box/releases/download/v${SING_VER}/sing-box-${SING_VER}-linux-amd64.tar.gz" -o sing-box.tar.gz
-          tar -xzf sing-box.tar.gz --strip-components=1 -C release/bin/sing_box/ "sing-box-${SING_VER}-linux-amd64/sing-box"
+          tar -xzf sing-box.tar.gz -C release/bin/sing_box/
+          mv release/bin/sing_box/sing-box-*/sing-box release/bin/sing_box/sing-box || true
+          rm -rf release/bin/sing_box/sing-box-*
           chmod +x release/bin/sing_box/sing-box
           rm -f sing-box.tar.gz
         elif [ "${{ matrix.target }}" = "osx" ]; then
           curl -sL "https://github.com/SagerNet/sing-box/releases/download/v${SING_VER}/sing-box-${SING_VER}-darwin-amd64.tar.gz" -o sing-box.tar.gz
-          tar -xzf sing-box.tar.gz --strip-components=1 -C release/bin/sing_box/ "sing-box-${SING_VER}-darwin-amd64/sing-box"
+          tar -xzf sing-box.tar.gz -C release/bin/sing_box/
+          mv release/bin/sing_box/sing-box-*/sing-box release/bin/sing_box/sing-box || true
+          rm -rf release/bin/sing_box/sing-box-*
           chmod +x release/bin/sing_box/sing-box
           rm -f sing-box.tar.gz
         fi
