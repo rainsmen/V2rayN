@@ -120,7 +120,7 @@ jobs:
         cd release && 7z a -tZip -mx=9 ../${{ matrix.out_name }} . && cd ..
 
     - name: Upload to Release
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v3
       with:
         tag_name: ${{ inputs.release_tag || github.ref_name }}
         files: |
