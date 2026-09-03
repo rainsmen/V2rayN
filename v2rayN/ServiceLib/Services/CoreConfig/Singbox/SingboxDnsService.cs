@@ -17,7 +17,6 @@ public partial class CoreConfigSingboxService
             GenDnsRules();
 
             _coreConfig.dns ??= new Dns4Sbox();
-            _coreConfig.dns.independent_cache = true;
 
             // final dns
             var routing = context.RoutingItem;
