@@ -121,7 +121,7 @@ public partial class CoreConfigSingboxService
             if (customRuleset is null)
             {
                 var pathSrs = Path.Combine(localSrss, $"{item}.srs");
-                if (File.Exists(pathSrs))
+                if (IsValidSrsFile(pathSrs))
                 {
                     customRuleset = new()
                     {
@@ -133,6 +133,18 @@ public partial class CoreConfigSingboxService
                 }
                 else
                 {
+                    if (File.Exists(pathSrs))
+                    {
+                        try
+                        {
+                            File.Delete(pathSrs);
+                        }
+                        catch
+                        {
+                            // ignore deletion failure
+                        }
+                    }
+
                     var srsUrl = string.IsNullOrEmpty(_config.ConstItem.SrsSourceUrl)
                         ? Global.SingboxRulesetUrl
                         : _config.ConstItem.SrsSourceUrl;
@@ -149,6 +161,33 @@ public partial class CoreConfigSingboxService
             }
             _coreConfig.route.rule_set.Add(customRuleset);
             addedTags.Add(item);
+        }
+    }
+
+    private static bool IsValidSrsFile(string path)
+    {
+        try
+        {
+            if (!File.Exists(path))
+            {
+                return false;
+            }
+            var fi = new FileInfo(path);
+            if (fi.Length < 16)
+            {
+                return false;
+            }
+            using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            var header = new byte[4];
+            if (fs.Read(header, 0, 4) != 4)
+            {
+                return false;
+            }
+            return header[0] == 0x53 && header[1] == 0x52 && header[2] == 0x53 && header[3] == 0x01;
+        }
+        catch
+        {
+            return false;
         }
     }
 }

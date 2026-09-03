@@ -793,4 +793,57 @@ public class CoreConfigSingboxServiceTests
         await logicalRule!.rules.Should().NotBeNull();
         await logicalRule.rules!.Count.Should().BeGreaterThanOrEqualTo(2);
     }
+
+    [Test]
+    public async Task GenerateClientConfigContent_CorruptedSrsFile_ShouldFallbackToRemoteRuleset()
+    {
+        var config = CoreConfigTestFactory.CreateConfig(ECoreType.sing_box);
+        CoreConfigTestFactory.BindAppManagerConfig(config);
+
+        var node = CoreConfigTestFactory.CreateSocksNode(ECoreType.sing_box);
+        var srssDir = Utils.GetBinPath("srss");
+        Directory.CreateDirectory(srssDir);
+        var corruptedFile = Path.Combine(srssDir, "geoip-cn.srs");
+        File.WriteAllText(corruptedFile, "404: Not Found");
+
+        try
+        {
+            var routingItem = new RoutingItem
+            {
+                Id = "test-corrupted-srs",
+                RuleSet = JsonUtils.Serialize(new List<RulesItem>
+                {
+                    new()
+                    {
+                        Enabled = true,
+                        RuleType = ERuleType.Routing,
+                        OutboundTag = "direct",
+                        Ip = ["geoip:cn"]
+                    }
+                })
+            };
+            var context = CoreConfigTestFactory.CreateContext(config, node, ECoreType.sing_box) with
+            {
+                RoutingItem = routingItem
+            };
+
+            var result = new CoreConfigSingboxService(context).GenerateClientConfigContent();
+            await result.Success.Should().BeTrue();
+
+            var cfg = JsonUtils.Deserialize<SingboxConfig>(result.Data!.ToString());
+            await cfg.Should().NotBeNull();
+            var ruleset = cfg!.route.rule_set.FirstOrDefault(r => r.tag == "geoip-cn");
+            await ruleset.Should().NotBeNull();
+            // 损坏的 404 文件应该被判定无效，并回退为 remote
+            await ruleset!.type.Should().BeEqualTo("remote");
+            await ruleset.url.Should().Contain("rule-set-geoip/geoip-cn.srs");
+        }
+        finally
+        {
+            if (File.Exists(corruptedFile))
+            {
+                File.Delete(corruptedFile);
+            }
+        }
+    }
 }
